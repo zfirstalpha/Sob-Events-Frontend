@@ -1,1 +1,12 @@
-<router-outlet />
+<div class="min-h-screen flex flex-col bg-canvas text-gray-100 selection:bg-brand-primary selection:text-white">
+  <!-- Top Navigation -->
+  <app-navbar />
+
+  <!-- Main Canvas for Routed Pages -->
+  <main class="flex-grow">
+    <router-outlet />
+  </main>
+
+  <!-- Global Footer -->
+  <app-footer />
+</div>
