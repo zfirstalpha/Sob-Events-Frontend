@@ -42,3 +42,21 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+# Compiled output
+/dist
+/tmp
+/out-tsc
+/bazel-out
+
+# Node dependencies (Never commit this!)
+/node_modules
+npm-debug.log
+yarn-error.log
+
+# Angular local cache
+/.angular/cache
+
+# IDE and OS files
+.vscode/
+.idea/
+.DS_Store
