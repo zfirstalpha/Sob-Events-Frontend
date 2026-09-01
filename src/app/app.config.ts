@@ -6,10 +6,10 @@ import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    // MODULE 8 SESSION 1 SLIDE 8: Pure Zoneless Change Detection with Signals!
+    //Pure Zoneless Change Detection with Signals!
     provideZonelessChangeDetection(),
 
-    // Automatically binds :id from route to component inputs (Module 8 Slide 13)
+    // Automatically binds :id from route to component inputs 
     provideRouter(routes, withComponentInputBinding()),
 
     // HTTP client for backend communication

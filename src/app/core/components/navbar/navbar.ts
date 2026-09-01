@@ -1,5 +1,7 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import {Theme} from '../../services/theme';
+
 
 @Component({
   selector: 'app-navbar',
@@ -9,6 +11,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
   styleUrl: './navbar.scss'
 })
 export class NavbarComponent{
+  themeService = inject(Theme);
   mobileMenuOpen =signal(false);//zonless signal to track mobile menu
 
   toggleMobileMenu(){

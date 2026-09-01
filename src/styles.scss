@@ -4,7 +4,7 @@
 @theme {
   --color-brand-primary: #6366f1;
   --color-brand-primary-hover: #4f46e5;
-  --color-brand-accent: #f43f5e;
+  --color-brand-accent: #E1B139;
   --color-brand-accent-hover: #e11d48;
   --color-canvas: #0b0f19;
   --color-card: #111827;
@@ -13,8 +13,10 @@
 
 // Global Body Styles
 body {
-  background-color: var(--color-canvas);
-  color: #f3f4f6;
+  @apply bg-gray-50 text-gray-900 transition-colors duration-200 antialiased;
   font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   margin: 0;
+}
+.dark body {
+  @apply bg-[#0B0F19] text-gray-100;
 }
