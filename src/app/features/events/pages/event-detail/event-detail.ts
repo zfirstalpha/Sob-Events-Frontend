@@ -1,8 +1,12 @@
 import { Component, inject, signal, computed, input, OnInit } from '@angular/core';
 import { DatePipe, CurrencyPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { Subject, exhaustMap } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EventService } from '../../../../core/services/event';
 import { TicketService } from '../../../../core/services/ticket';
+import { ReservationService } from '../../../../core/services/reservation';
+import { ReservationStore } from '../../../../core/stores/reservation.store';
 import { Event, TicketType } from '../../../../core/models';
 
 @Component({
@@ -13,41 +17,66 @@ import { Event, TicketType } from '../../../../core/models';
   styleUrl: './event-detail.scss'
 })
 export class EventDetailComponent implements OnInit {
-  // Automatically receives :id from the URL (/events/:id)
   id = input.required<string>();
 
   private eventService = inject(EventService);
   private ticketService = inject(TicketService);
+  private reservationService = inject(ReservationService);
+  readonly reservationStore = inject(ReservationStore);
 
-  // Zoneless Signals for page state
+  // MODULE 9 SESSION 3 SLIDE 9: Subject manual bus for handling click events
+  private reserveClick$ = new Subject<{ ticketTypeId: number; quantity: number }>();
+
   event = signal<Event | null>(null);
   ticketTypes = signal<TicketType[]>([]);
   isLoading = signal<boolean>(true);
+  isSubmitting = signal<boolean>(false);
+  errorMessage = signal<string | null>(null);
 
-  // User booking selection state
   selectedTicketId = signal<number | null>(null);
   selectedQuantity = signal<number>(1);
 
-  // Computed: currently selected ticket tier object
   selectedTicket = computed(() => 
     this.ticketTypes().find(t => t.id === this.selectedTicketId()) ?? null
   );
 
-  //  Computed: live total price calculation
   totalPrice = computed(() => {
     const ticket = this.selectedTicket();
     return ticket ? ticket.price * this.selectedQuantity() : 0;
   });
 
-  //  Computed: HATEOAS verification 
   canReserve = computed(() => {
     const ticket = this.selectedTicket();
-    if (!ticket || ticket.availableQuantity < this.selectedQuantity() || !ticket.isActive) {
+    if (!ticket || ticket.availableQuantity < this.selectedQuantity() || !ticket.isActive || this.isSubmitting()) {
       return false;
     }
-    // Verifies backend affordance exists
     return ticket.links?.some(l => l.rel === 'reserve') ?? true;
   });
+
+  constructor() {
+    // MODULE 9 SESSION 3 SLIDE 9: Defensive stream with exhaustMap & takeUntilDestroyed()!
+    this.reserveClick$.pipe(
+      exhaustMap(({ ticketTypeId, quantity }) => {
+        this.isSubmitting.set(true);
+        this.errorMessage.set(null);
+
+        return this.reservationService.createReservation(ticketTypeId, { quantity }).pipe(
+          // Defensive error handling
+        );
+      }),
+      takeUntilDestroyed()
+    ).subscribe({
+      next: (reservation) => {
+        this.isSubmitting.set(false);
+        // Lock in the 15-minute hold in our central store!
+        this.reservationStore.setActiveHold(reservation);
+      },
+      error: (err) => {
+        this.isSubmitting.set(false);
+        this.errorMessage.set(err.error?.detail || err.error?.title || 'Unable to reserve tickets. Please try again.');
+      }
+    });
+  }
 
   ngOnInit() {
     this.loadEventData();
@@ -70,7 +99,6 @@ export class EventDetailComponent implements OnInit {
     this.ticketService.getTicketTypesByEvent(eventId).subscribe({
       next: (tickets) => {
         this.ticketTypes.set(tickets);
-        // Auto-select first available tier
         const firstAvailable = tickets.find(t => t.availableQuantity > 0 && t.isActive);
         if (firstAvailable) {
           this.selectedTicketId.set(firstAvailable.id);
@@ -83,7 +111,7 @@ export class EventDetailComponent implements OnInit {
 
   selectTicket(ticketId: number) {
     this.selectedTicketId.set(ticketId);
-    this.selectedQuantity.set(1); // Reset quantity on tier switch
+    this.selectedQuantity.set(1);
   }
 
   incrementQuantity() {
@@ -99,10 +127,14 @@ export class EventDetailComponent implements OnInit {
     }
   }
 
-  onReserve() {
+  // Pushes into the defensive stream (Zero naked subscriptions inside click handler!)
+  onReserveClick() {
     const ticket = this.selectedTicket();
     if (!ticket || !this.canReserve()) return;
 
-    alert(`Proceeding to reserve ${this.selectedQuantity()}x ${ticket.name} ($${this.totalPrice()}) with a 15-minute hold.`);
+    this.reserveClick$.next({
+      ticketTypeId: ticket.id,
+      quantity: this.selectedQuantity()
+    });
   }
 }
