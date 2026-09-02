@@ -1,0 +1,100 @@
+<div class="bg-card text-main p-6 sm:p-8 rounded-3xl border border-subtle max-w-2xl w-full space-y-6">
+  
+  <!-- Dialog Header -->
+  <div class="flex items-center justify-between pb-4 border-b border-subtle">
+    <div>
+      <h2 class="text-xl font-black text-main">Create New Event</h2>
+      <p class="text-xs text-muted mt-0.5">Events start in Draft mode until you add tickets and publish.</p>
+    </div>
+    <button (click)="onCancel()" class="p-2 text-muted hover:text-main rounded-full">
+      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Reactive Form -->
+  <form [formGroup]="eventForm" (ngSubmit)="onSubmit()" class="space-y-4">
+    
+    <!-- Event Name -->
+    <div class="space-y-1">
+      <label class="text-xs font-bold uppercase tracking-wider text-muted">Event Name *</label>
+      <input type="text" 
+             formControlName="name"
+             placeholder="e.g. Addis AI Hackathon 2026"
+             class="w-full px-4 py-3 rounded-xl bg-elevated border border-subtle text-sm font-medium text-main placeholder-muted focus:outline-none focus:border-primary transition-all" />
+      @if (eventForm.get('name')?.touched && eventForm.get('name')?.invalid) {
+        <span class="text-[11px] text-rose-500 font-semibold">Event name is required (max 100 characters).</span>
+      }
+    </div>
+
+    <!-- Location -->
+    <div class="space-y-1">
+      <label class="text-xs font-bold uppercase tracking-wider text-muted">Location / Venue *</label>
+      <input type="text" 
+             formControlName="location"
+             placeholder="e.g. Millennium Hall, Addis Ababa"
+             class="w-full px-4 py-3 rounded-xl bg-elevated border border-subtle text-sm font-medium text-main placeholder-muted focus:outline-none focus:border-primary transition-all" />
+      @if (eventForm.get('location')?.touched && eventForm.get('location')?.invalid) {
+        <span class="text-[11px] text-rose-500 font-semibold">Location is required.</span>
+      }
+    </div>
+
+    <!-- Date Grid (Start & End) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-wider text-muted">Start Date & Time *</label>
+        <input type="datetime-local" 
+               formControlName="startDate"
+               class="w-full px-4 py-3 rounded-xl bg-elevated border border-subtle text-sm font-medium text-main focus:outline-none focus:border-primary transition-all" />
+      </div>
+
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-wider text-muted">End Date & Time *</label>
+        <input type="datetime-local" 
+               formControlName="endDate"
+               class="w-full px-4 py-3 rounded-xl bg-elevated border border-subtle text-sm font-medium text-main focus:outline-none focus:border-primary transition-all" />
+      </div>
+    </div>
+
+    <!-- Banner Image URL -->
+    <div class="space-y-1">
+      <label class="text-xs font-bold uppercase tracking-wider text-muted">Banner Image URL (Optional)</label>
+      <input type="url" 
+             formControlName="imageUrl"
+             placeholder="https://images.unsplash.com/..."
+             class="w-full px-4 py-3 rounded-xl bg-elevated border border-subtle text-sm font-medium text-main placeholder-muted focus:outline-none focus:border-primary transition-all" />
+    </div>
+
+    <!-- Description -->
+    <div class="space-y-1">
+      <label class="text-xs font-bold uppercase tracking-wider text-muted">Description</label>
+      <textarea rows="3" 
+                formControlName="description"
+                placeholder="Details about the event, speakers, agenda..."
+                class="w-full px-4 py-3 rounded-xl bg-elevated border border-subtle text-sm font-medium text-main placeholder-muted focus:outline-none focus:border-primary transition-all resize-none"></textarea>
+    </div>
+
+    <!-- Actions -->
+    <div class="pt-4 border-t border-subtle flex items-center justify-end gap-3">
+      <button (click)="onCancel()" 
+              type="button" 
+              class="px-5 py-2.5 rounded-xl bg-elevated hover:bg-subtle text-xs font-bold text-main border border-subtle transition-all">
+        Cancel
+      </button>
+      
+      <!-- Solid Black Ink Create Button -->
+      <button [disabled]="isSubmitting()"
+              type="submit" 
+              class="px-6 py-2.5 rounded-xl bg-accent hover:opacity-90 disabled:opacity-50 text-white dark:text-[#171717] text-xs font-bold uppercase tracking-wider transition-all shadow-sm flex items-center gap-2">
+        @if (isSubmitting()) {
+          <span class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+          <span>Creating...</span>
+        } @else {
+          <span>Create Draft Event</span>
+        }
+      </button>
+    </div>
+
+  </form>
+</div>

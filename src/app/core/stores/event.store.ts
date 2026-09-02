@@ -1,9 +1,9 @@
 import { inject, computed } from '@angular/core';
 import { signalStore, withState, withComputed, withMethods, patchState } from '@ngrx/signals';
-import { withEntities, setAllEntities, updateEntity, removeEntity } from '@ngrx/signals/entities';
+import { withEntities, setAllEntities, updateEntity, removeEntity, addEntity } from '@ngrx/signals/entities';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { pipe, tap, concatMap, switchMap, catchError, of } from 'rxjs';
-import { Event, PagedRequest } from '../models';
+import { CreateEventRequest, Event, PagedRequest } from '../models';
 import { EventService } from '../services/event';
 
 interface EventState {
@@ -85,7 +85,33 @@ export const EventStore = signalStore(
           })
         ))
       )
-    )
+    ),
+   createEvent: rxMethod<{ 
+  request: CreateEventRequest; 
+  onSuccess: () => void; 
+  onError: (errorMsg: string) => void; 
+}>(
+  pipe(
+    concatMap(({ request, onSuccess, onError }) => eventService.createEvent(request).pipe(
+      tap((newEvent) => {
+        patchState(store, addEntity(newEvent), { totalCount: store.totalCount() + 1 });
+        onSuccess();
+      }),
+      catchError((err) => {
+        // MODULE 10: Human-friendly error translation for 401/403/400
+        const errorMsg = err.status === 401
+          ? 'Authentication required. Please sign in as an Organizer to create events.'
+          : err.status === 403
+          ? 'Access denied. You do not have the Organizer role.'
+          : err.error?.detail || err.error?.title || 'Failed to create event.';
+
+        patchState(store, { error: errorMsg });
+        onError(errorMsg); // Triggers error handler in dialog!
+        return of(null);
+      })
+    ))
+  )
+)
 
   }))
 );
