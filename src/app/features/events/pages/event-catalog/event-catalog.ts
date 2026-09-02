@@ -1,5 +1,7 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EventCard } from '../../components/event-card/event-card';
 import { EventStore } from '../../../../core/stores/event.store';
 import { Event } from '../../../../core/models';
@@ -12,23 +14,37 @@ import { Event } from '../../../../core/models';
   styleUrl: './event-catalog.scss'
 })
 export class EventCatalogComponent implements OnInit {
-  // MODULE 9 SESSION 1: Inject Global SignalStore as single source of truth!
   readonly eventStore = inject(EventStore);
   private router = inject(Router);
+
+  // MODULE 9 SESSION 3 SLIDE 7: Subject stream for defensive typeahead search
+  private searchSubject$ = new Subject<string>();
 
   searchQuery = signal<string>('');
   selectedCategory = signal<string>('All');
   categories = ['All', 'Technology', 'Conferences', 'Music & Concerts', 'Business', 'Workshops'];
 
-  ngOnInit() {
-    // Initial load from store
-    this.eventStore.loadEvents();
+  constructor() {
+    // MODULE 9 SESSION 3 SLIDE 7: Defensive RxJS Stream Pipeline
+    this.searchSubject$.pipe(
+      debounceTime(300),          // 1. Debounce: Wait 300ms for user to pause
+      distinctUntilChanged(),     // 2. Ignore duplicate values
+      takeUntilDestroyed()        // 3. Prevent memory leaks on component destruction
+    ).subscribe((query) => {
+      this.searchQuery.set(query);
+      // Calls EventStore's rxMethod (which uses switchMap internally to cancel stale HTTP calls!)
+      this.eventStore.loadEvents({ search: query, pageSize: 12 });
+    });
   }
 
-  onSearchChange(event: globalThis.Event) {
+  ngOnInit() {
+    this.eventStore.loadEvents({ pageSize: 12 });
+  }
+
+  // Pushes raw keystrokes into our Subject stream (Zero naked subscriptions inside handler!)
+  onSearchInput(event: globalThis.Event) {
     const value = (event.target as HTMLInputElement).value;
-    this.searchQuery.set(value);
-    this.eventStore.loadEvents({ search: value, pageSize: 12 });
+    this.searchSubject$.next(value);
   }
 
   selectCategory(category: string) {

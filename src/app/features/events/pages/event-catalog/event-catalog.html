@@ -14,16 +14,16 @@
       From tech conferences to live music, reserve your seats with real-time capacity tracking and instant 15-minute holds.
     </p>
 
-    <!-- Search Input with bg-elevated and bg-primary -->
+   <!-- Search Input with Defensive Stream Binding -->
     <div class="mt-8 max-w-2xl mx-auto relative flex items-center">
       <input type="text"
              [value]="searchQuery()"
-             (input)="onSearchChange($event)"
+             (input)="onSearchInput($event)"
              placeholder="Search events, venues, concerts..."
              class="w-full pl-6 pr-16 py-4 rounded-full bg-elevated border border-subtle text-sm font-medium text-main placeholder-muted focus:outline-none focus:border-primary shadow-sm transition-all" />
 
       <button type="button"
-              class="absolute right-2.5 w-11 h-11 rounded-full bg-primary hover:bg-primary-hover text-[#171717] flex items-center justify-center transition-transform hover:scale-105 shadow-md shadow-primary/20"
+              class="absolute right-2.5 w-11 h-11 rounded-full bg-primary hover:bg-primary-hover text-main flex items-center justify-center transition-transform hover:scale-105 shadow-md shadow-primary/20"
               aria-label="Search Events">
         <svg class="w-5 h-5 stroke-[2.5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -59,7 +59,7 @@
     @if (eventStore.isLoading()) {
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         @for (i of [1,2,3,4,5,6]; track i) {
-          <div class="h-80 rounded-3xl bg-elevated animate-pulse border border-subtle"></div>
+          <div class="h-80 rounded-3xl bg-elevated  "></div>
         }
       </div>
     } @else {
@@ -70,11 +70,11 @@
               [event]="event" 
               (bookClicked)="onBookEvent($event)" />
           } @placeholder {
-            <div class="h-80 rounded-3xl bg-card border border-dashed border-subtle flex items-center justify-center text-xs text-muted">
+            <div class="h-80 rounded-3xl bg-card  flex items-center justify-center text-xs text-muted">
               Loading event...
             </div>
           } @loading (minimum 500ms) {
-            <div class="h-80 rounded-3xl bg-elevated animate-pulse border border-subtle"></div>
+            <div class="h-80 rounded-3xl bg-elevated "></div>
           }
         } @empty {
           <div class="col-span-full py-16 text-center bg-card rounded-3xl border border-subtle p-8">

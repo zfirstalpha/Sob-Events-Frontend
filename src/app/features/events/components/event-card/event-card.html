@@ -3,12 +3,12 @@
 
   <!-- 1. Event 16:9 Banner Image (0 Artificial Gradients) -->
   <div class="relative w-full aspect-[16/9] overflow-hidden bg-elevated">
-    <img [src]="event().imageUrl || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1000&q=80'" 
+    <img [src]="event().imageUrl || 'https://storage.googleapis.com/adarash-production-media/events/gallery/mswkhg5s-89e1007f8174.jpg?auto=format&fit=crop&w=1000&q=80'" 
          [alt]="event().name"
          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
 
-    <!-- Date Badge: Rare Gold Accent (--primary: #FDC700) -->
-    <div class="absolute top-3.5 left-3.5 px-3 py-1.5 rounded-xl bg-primary text-[#171717] shadow-sm flex flex-col items-center leading-none font-black">
+    <!-- Date Badge -->
+    <div class="absolute top-3.5 left-3.5 px-3 py-1.5 rounded-xl bg-primary text-main shadow-sm flex flex-col items-center leading-none font-black">
       <span class="text-[10px] uppercase tracking-wider">
         {{ event().startDate | date:'MMM' }}
       </span>
