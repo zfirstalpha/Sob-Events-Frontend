@@ -1,29 +1,32 @@
-<header class="sticky top-0 z-50 bg-white/95 dark:bg-[#0B0F19]/95 backdrop-blur-md border-b border-gray-200/80 dark:border-white/10 transition-colors duration-200">
+<header class="sticky top-0 z-50 bg-canvas border-b border-subtle transition-colors duration-150">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex items-center justify-between h-20">
       
-      <!-- 1. Brand Logo (Using /logo.jpg from your public folder) -->
+      <!-- 1. Brand Logo -->
       <div class="flex items-center gap-8">
-        <a routerLink="/events" class="flex items-center gap-3 group">
-          <img src="/logo.jpg" alt="SobEvents Logo" class="w-10 h-10 rounded-xl object-cover shadow-sm group-hover:scale-105 transition-transform" />
+        <a routerLink="/events" class="flex items-center gap-3">
+          <img src="/logo.jpg" alt="SobEvents Logo" class="w-10 h-10 rounded-xl object-cover border border-subtle" />
           <div class="flex flex-col">
-            <span class="text-xl font-extrabold tracking-tight text-gray-950 dark:text-white leading-none">
-              Sob<span class="text-brand-accent">Events</span>
+            <span class="text-xl font-extrabold tracking-tight text-main leading-none">
+              SobEvents
             </span>
-            <span class="text-[10px] uppercase font-bold tracking-widest text-gray-400 dark:text-gray-500 mt-0.5">Addis Ababa</span>
+            <span class="text-[10px] uppercase font-bold tracking-widest text-muted mt-0.5">Addis Ababa</span>
           </div>
         </a>
 
-        <!-- 2. Integrated Search Bar (Desktop) -->
+        <!-- 2. Search Bar (Using bg-elevated + bg-primary) -->
         <div class="hidden lg:flex items-center relative w-80">
-          <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400 dark:text-gray-500">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </div>
           <input type="text" 
                  placeholder="Search events, venues, concerts..." 
-                 class="w-full pl-10 pr-4 py-2 text-xs font-medium rounded-full bg-gray-100 dark:bg-gray-800/80 border border-transparent focus:border-brand-accent focus:bg-white dark:focus:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none transition-all shadow-inner" />
+                 class="w-full pl-4 pr-12 py-2.5 text-xs font-medium rounded-full bg-elevated border border-subtle text-main placeholder-muted focus:outline-none focus:border-primary transition-all shadow-inner" />
+          
+          <button type="button" 
+                  class="absolute right-1.5 w-7 h-7 rounded-full bg-primary hover:bg-primary-hover text-[#171717] flex items-center justify-center transition-colors shadow-sm"
+                  aria-label="Search">
+            <svg class="w-3.5 h-3.5 stroke-[2.5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </button>
         </div>
       </div>
 
@@ -31,49 +34,49 @@
       <div class="hidden md:flex items-center gap-6">
         <nav class="flex items-center gap-1">
           <a routerLink="/events" 
-             routerLinkActive="text-brand-accent font-bold"
+             routerLinkActive="text-main font-bold border-b-2 border-primary"
              [routerLinkActiveOptions]="{ exact: true }"
-             class="px-3.5 py-2 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-950 dark:hover:text-white transition-colors">
+             class="px-3.5 py-2 text-sm font-medium text-muted hover:text-main transition-colors">
             Explore Events
           </a>
           <a routerLink="/my-reservations" 
-             routerLinkActive="text-brand-accent font-bold"
-             class="px-3.5 py-2 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-950 dark:hover:text-white transition-colors">
+             routerLinkActive="text-main font-bold border-b-2 border-primary"
+             class="px-3.5 py-2 text-sm font-medium text-muted hover:text-main transition-colors">
             My Bookings
           </a>
           <a routerLink="/organizer/events" 
-             class="px-3.5 py-2 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-brand-accent transition-colors flex items-center gap-1.5">
-            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+             class="px-3.5 py-2 text-sm font-medium text-muted hover:text-main transition-colors flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-primary"></span>
             Host an Event
           </a>
         </nav>
 
-        <div class="h-5 w-px bg-gray-200 dark:bg-gray-800"></div>
+        <div class="h-5 w-px bg-subtle"></div>
 
         <!-- 4. Night Mode Switcher Button -->
         <button (click)="themeService.toggleTheme()" 
                 type="button" 
-                class="p-2.5 rounded-full text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white bg-gray-100 dark:bg-gray-800/80 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all focus:outline-none"
+                class="p-2.5 rounded-full text-muted hover:text-main bg-elevated border border-subtle transition-all focus:outline-none"
                 aria-label="Toggle Night Mode">
           @if (themeService.darkMode()) {
-            <svg class="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg class="w-4 h-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
             </svg>
           } @else {
-            <svg class="w-4 h-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg class="w-4 h-4 text-main" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
             </svg>
           }
         </button>
 
-        <!-- 5. Auth Buttons -->
+        <!-- 5. Black Ink Solid CTA -->
         <div class="flex items-center gap-2">
           <a routerLink="/login" 
-             class="px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-200 hover:text-brand-accent transition-colors">
+             class="px-4 py-2 text-sm font-semibold text-main hover:text-muted transition-colors">
             Sign In
           </a>
           <a routerLink="/register" 
-             class="px-5 py-2.5 rounded-full bg-gray-900 hover:bg-black dark:bg-white dark:hover:bg-gray-100 text-white dark:text-gray-950 text-xs font-bold uppercase tracking-wider shadow-sm transition-all hover:shadow-md">
+             class="px-5 py-2.5 rounded-full bg-accent hover:opacity-90 text-white dark:text-[#171717] text-xs font-bold uppercase tracking-wider transition-all shadow-sm">
             Sign Up
           </a>
         </div>
@@ -83,18 +86,18 @@
       <div class="flex md:hidden items-center gap-2">
         <button (click)="themeService.toggleTheme()" 
                 type="button" 
-                class="p-2 rounded-full text-gray-500 bg-gray-100 dark:bg-gray-800">
+                class="p-2 rounded-full text-muted bg-elevated border border-subtle">
           @if (themeService.darkMode()) {
-            <svg class="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg class="w-4 h-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
             </svg>
           } @else {
-            <svg class="w-4 h-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg class="w-4 h-4 text-main" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
             </svg>
           }
         </button>
-        <button (click)="toggleMobileMenu()" class="p-2 rounded-lg text-gray-700 dark:text-gray-300">
+        <button (click)="toggleMobileMenu()" class="p-2 rounded-lg text-main">
           <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
           </svg>
@@ -104,23 +107,23 @@
     </div>
   </div>
 
-  <!-- Mobile Dropdown Menu -->
+  <!-- Mobile Dropdown -->
   @if (mobileMenuOpen()) {
-    <div class="md:hidden border-t border-gray-200 dark:border-white/10 bg-white dark:bg-[#111827] px-4 pt-3 pb-6 space-y-2 shadow-xl">
-      <a routerLink="/events" (click)="closeMobileMenu()" class="block px-3 py-2.5 rounded-lg text-base font-medium text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800">
+    <div class="md:hidden border-t border-subtle bg-canvas px-4 pt-3 pb-6 space-y-2 shadow-xl">
+      <a routerLink="/events" (click)="closeMobileMenu()" class="block px-3 py-2.5 rounded-lg text-base font-medium text-main hover:bg-elevated">
         Explore Events
       </a>
-      <a routerLink="/my-reservations" (click)="closeMobileMenu()" class="block px-3 py-2.5 rounded-lg text-base font-medium text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800">
+      <a routerLink="/my-reservations" (click)="closeMobileMenu()" class="block px-3 py-2.5 rounded-lg text-base font-medium text-main hover:bg-elevated">
         My Bookings
       </a>
-      <a routerLink="/organizer/events" (click)="closeMobileMenu()" class="block px-3 py-2.5 rounded-lg text-base font-medium text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800">
+      <a routerLink="/organizer/events" (click)="closeMobileMenu()" class="block px-3 py-2.5 rounded-lg text-base font-medium text-main hover:bg-elevated">
         Host an Event
       </a>
-      <div class="pt-4 border-t border-gray-200 dark:border-gray-800 flex flex-col gap-2">
-        <a routerLink="/login" (click)="closeMobileMenu()" class="w-full text-center py-2.5 text-sm font-semibold text-gray-800 dark:text-white">
+      <div class="pt-4 border-t border-subtle flex flex-col gap-2">
+        <a routerLink="/login" (click)="closeMobileMenu()" class="w-full text-center py-2.5 text-sm font-semibold text-main">
           Sign In
         </a>
-        <a routerLink="/register" (click)="closeMobileMenu()" class="w-full text-center py-3 rounded-full bg-brand-accent text-white text-xs font-bold uppercase tracking-wider">
+        <a routerLink="/register" (click)="closeMobileMenu()" class="w-full text-center py-3 rounded-full bg-accent text-white dark:text-[#171717] text-xs font-bold uppercase tracking-wider">
           Sign Up
         </a>
       </div>

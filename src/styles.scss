@@ -1,29 +1,52 @@
-@import "tailwindcss/tailwind.css";
-@layer utilities {
-  @variant dark (&:where(.dark, .dark *));
+@import "tailwindcss";
+
+// Enable class-based dark mode (.dark) in Tailwind v4
+@variant dark (&:where(.dark, .dark *));
+
+// MODULE 8: Map design tokens to generate native classes (bg-primary, bg-canvas, text-main, etc.)
+@theme {
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-accent: var(--accent);
+  --color-canvas: var(--canvas);
+  --color-card: var(--card);
+  --color-elevated: var(--elevated);
+  --color-main: var(--main);
+  --color-muted: var(--muted);
+  --color-subtle: var(--subtle);
 }
 
+// Light Mode Values
 :root {
-  --color-brand-primary: #6366f1;
-  --color-brand-primary-hover: #4f46e5;
-  --color-brand-accent: #E1B139;
-  --color-brand-accent-hover: #e11d48;
-  --color-canvas: hsl(223, 39%, 7%);
-  --color-card: #111827;
-  --color-elevated: #1f2937;
+  --primary: #FDC700;
+  --primary-hover: #E0B200;
+  --accent: #171717;
+  --canvas: #FFFFFF;
+  --card: #FFFFFF;
+  --elevated: #F0F1F5;
+  --main: #171717;
+  --muted: #767D8C;
+  --subtle: #E5E7EB;
 }
 
-// Global Body Styles
-body {
-  background-color: #f9fafb;
-  color: #111827;
-  transition: color 200ms, background-color 200ms;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-  margin: 0;
+// Night Mode Values (Automatically flips the variables when .dark is active!)
+html.dark {
+  --primary: #FDC700;
+  --primary-hover: #E0B200;
+  --accent: #FFFFFF;
+  --canvas: #0B0F19;
+  --card: #111827;
+  --elevated: #1F2937;
+  --main: #F9FAFB;
+  --muted: #9CA3AF;
+  --subtle: rgba(255, 255, 255, 0.1);
 }
-.dark body {
-  background-color: #0b0f19;
-  color: rgb(243 244 246);
+
+html, body {
+  min-height: 100vh;
+  margin: 0;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  background-color: var(--canvas);
+  color: var(--main);
+  transition: background-color 0.15s ease, color 0.15s ease;
 }

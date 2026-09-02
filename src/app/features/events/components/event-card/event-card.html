@@ -1,21 +1,18 @@
-<div class="group relative flex flex-col bg-white dark:bg-[#111827] rounded-3xl overflow-hidden border border-gray-200/80 dark:border-white/10 hover:border-brand-primary/50 dark:hover:border-indigo-500/50 shadow-sm hover:shadow-xl hover:shadow-brand-primary/10 dark:hover:shadow-indigo-500/10 transition-all duration-300 hover:-translate-y-1.5 cursor-pointer"
+<div class="group relative flex flex-col bg-card rounded-3xl overflow-hidden border border-subtle hover:border-primary/50 hover:shadow-md transition-all duration-200 cursor-pointer"
      [routerLink]="['/events', event().id]">
 
-  <!-- 1. Event Banner Image with 16:9 Aspect Ratio -->
-  <div class="relative w-full aspect-[16/9] overflow-hidden bg-gray-100 dark:bg-gray-800">
+  <!-- 1. Event 16:9 Banner Image (0 Artificial Gradients) -->
+  <div class="relative w-full aspect-[16/9] overflow-hidden bg-elevated">
     <img [src]="event().imageUrl || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1000&q=80'" 
          [alt]="event().name"
-         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
 
-    <!-- Gradient Overlay -->
-    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-80 group-hover:opacity-60 transition-opacity"></div>
-
-    <!-- Floating Date Badge (Top Left - OwlEvents Style) -->
-    <div class="absolute top-3.5 left-3.5 px-3 py-1.5 rounded-2xl bg-white/90 dark:bg-black/75 backdrop-blur-md border border-white/20 shadow-lg flex flex-col items-center leading-none">
-      <span class="text-[10px] font-extrabold uppercase tracking-wider text-brand-accent">
+    <!-- Date Badge: Rare Gold Accent (--primary: #FDC700) -->
+    <div class="absolute top-3.5 left-3.5 px-3 py-1.5 rounded-xl bg-primary text-[#171717] shadow-sm flex flex-col items-center leading-none font-black">
+      <span class="text-[10px] uppercase tracking-wider">
         {{ event().startDate | date:'MMM' }}
       </span>
-      <span class="text-base font-black text-gray-950 dark:text-white mt-0.5">
+      <span class="text-base mt-0.5">
         {{ event().startDate | date:'dd' }}
       </span>
     </div>
@@ -23,33 +20,32 @@
     <!-- Status Badge (Top Right) -->
     <div class="absolute top-3.5 right-3.5">
       @if (event().status === 'Published') {
-        <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-500/90 text-white shadow-sm flex items-center gap-1">
-          <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+        <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-accent text-white dark:text-[#171717] shadow-sm flex items-center gap-1.5">
+          <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
           Live
         </span>
       } @else if (event().status === 'Draft') {
-        <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-500/90 text-white">
+        <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-elevated text-main border border-subtle">
           Draft
         </span>
       } @else {
-        <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-rose-500/90 text-white">
+        <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-rose-600 text-white">
           Cancelled
         </span>
       }
     </div>
   </div>
 
-  <!-- 2. Card Content & Metadata -->
+  <!-- 2. Content & Typography -->
   <div class="flex flex-col flex-grow p-5 justify-between">
     <div>
-      <!-- Event Name -->
-      <h3 class="text-base font-bold text-gray-950 dark:text-white group-hover:text-brand-primary dark:group-hover:text-indigo-400 transition-colors line-clamp-1">
+      <h3 class="text-base font-extrabold text-main group-hover:text-primary transition-colors line-clamp-1">
         {{ event().name }}
       </h3>
 
       <!-- Location with Pin Icon -->
-      <div class="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 mt-2 font-medium line-clamp-1">
-        <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <div class="flex items-center gap-1.5 text-xs text-muted mt-2 font-medium line-clamp-1">
+        <svg class="w-3.5 h-3.5 flex-shrink-0 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
         </svg>
@@ -57,26 +53,26 @@
       </div>
 
       <!-- Description Snippet -->
-      <p class="text-xs text-gray-600 dark:text-gray-400 mt-2.5 line-clamp-2 leading-relaxed">
-        {{ event().description || 'Join us for this exciting live event in Addis Ababa. Reserve your tickets before capacity runs out.' }}
+      <p class="text-xs text-muted mt-2.5 line-clamp-2 leading-relaxed">
+        {{ event().description }}
       </p>
     </div>
 
     <!-- 3. Bottom Action Bar -->
-    <div class="pt-4 mt-4 border-t border-gray-100 dark:border-white/5 flex items-center justify-between">
+    <div class="pt-4 mt-4 border-t border-subtle flex items-center justify-between">
       <div class="flex flex-col">
-        <span class="text-[10px] uppercase font-bold text-gray-600 dark:text-gray-300">Starts At</span>
-        <span class="text-xs font-bold text-gray-800 dark:text-gray-200">
+        <span class="text-[10px] uppercase font-bold text-muted">Starts At</span>
+        <span class="text-xs font-bold text-main">
           {{ event().startDate | date:'shortTime' }}
         </span>
       </div>
 
-      <!-- Vibrant CTA Button (Events UP) -->
+      <!-- Solid Black Ink CTA Button -->
       <button (click)="onBookNow($event)"
               type="button" 
-              class="px-4 py-2 rounded-xl bg-gray-100 hover:bg-brand-accent hover:text-white dark:bg-gray-800 dark:hover:bg-brand-accent text-gray-900 dark:text-gray-100 text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 group/btn">
+              class="px-4 py-2 rounded-xl bg-accent hover:opacity-90 text-white dark:text-[#171717] text-xs font-bold transition-all shadow-sm flex items-center gap-1.5">
         <span>Get Tickets</span>
-        <svg class="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
         </svg>
       </button>

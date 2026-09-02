@@ -3,6 +3,7 @@ import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { routes } from './app.routes';
+import { EventService } from './core/services/event';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -16,6 +17,8 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(),
 
     // Async animations provider for Angular Material
-    provideAnimationsAsync()
+    provideAnimationsAsync(),
+   
+    
   ]
 };

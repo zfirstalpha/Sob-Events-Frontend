@@ -1,0 +1,89 @@
+<div class="space-y-12">
+
+  <!-- 1. Hero Section -->
+  <section class="relative pt-14 pb-8 px-4 sm:px-6 lg:px-8 text-center max-w-5xl mx-auto">
+    
+   
+
+    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-main tracking-tight leading-tight">
+      Discover, Reserve & Experience <br />
+      <span>Unforgettable Events</span>
+    </h1>
+
+    <p class="mt-4 text-sm sm:text-base text-muted max-w-2xl mx-auto leading-relaxed">
+      From tech conferences to live music, reserve your seats with real-time capacity tracking and instant 15-minute holds.
+    </p>
+
+    <!-- Search Input with bg-elevated and bg-primary -->
+    <div class="mt-8 max-w-2xl mx-auto relative flex items-center">
+      <input type="text"
+             [value]="searchQuery()"
+             (input)="onSearchChange($event)"
+             placeholder="Search events, venues, concerts..."
+             class="w-full pl-6 pr-16 py-4 rounded-full bg-elevated border border-subtle text-sm font-medium text-main placeholder-muted focus:outline-none focus:border-primary shadow-sm transition-all" />
+
+      <button type="button"
+              class="absolute right-2.5 w-11 h-11 rounded-full bg-primary hover:bg-primary-hover text-[#171717] flex items-center justify-center transition-transform hover:scale-105 shadow-md shadow-primary/20"
+              aria-label="Search Events">
+        <svg class="w-5 h-5 stroke-[2.5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Category Filter Chips -->
+    <div class="mt-8 flex flex-wrap items-center justify-center gap-2">
+      @for (cat of categories; track cat) {
+        <button (click)="selectCategory(cat)"
+                type="button"
+                [class]="selectedCategory() === cat 
+                  ? 'bg-accent text-white dark:text-[#171717] shadow-sm' 
+                  : 'bg-elevated text-muted border border-subtle hover:text-main'"
+                class="px-4 py-2 rounded-full text-xs font-bold transition-all">
+          {{ cat }}
+        </button>
+      }
+    </div>
+  </section>
+
+  <!-- 2. Events Grid Section -->
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h2 class="text-2xl font-black text-main">Featured Events</h2>
+        <p class="text-xs text-muted mt-1">Available Events</p>
+      </div>
+    </div>
+
+    <!-- Loading Skeleton -->
+    @if (isLoading()) {
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        @for (i of [1,2,3,4,5,6]; track i) {
+          <div class="h-80 rounded-3xl bg-elevated animate-pulse border border-subtle"></div>
+        }
+      </div>
+    } @else {
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        @for (event of events(); track event.id) {
+          @defer (on viewport; prefetch on idle(500)) {
+            <app-event-card 
+              [event]="event" 
+              (bookClicked)="onBookEvent($event)" />
+          } @placeholder {
+            <div class="h-80 rounded-3xl bg-card border border-dashed border-subtle flex items-center justify-center text-xs text-muted">
+              Loading event...
+            </div>
+          } @loading (minimum 500ms) {
+            <div class="h-80 rounded-3xl bg-elevated animate-pulse border border-subtle"></div>
+          }
+        } @empty {
+          <div class="col-span-full py-16 text-center bg-card rounded-3xl border border-subtle p-8">
+            <h3 class="text-base font-bold text-main">No Events Found</h3>
+            <p class="text-xs text-muted mt-1">Try adjusting your search query or select another category.</p>
+          </div>
+        }
+      </div>
+    }
+  </section>
+
+</div>
