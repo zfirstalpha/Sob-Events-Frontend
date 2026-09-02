@@ -3,7 +3,7 @@ import { DatePipe, CurrencyPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { EventService } from '../../../../core/services/event';
 import { TicketService } from '../../../../core/services/ticket';
-import { Event, TicketType } from '../../../../models';
+import { Event, TicketType } from '../../../../core/models';
 
 @Component({
   selector: 'app-event-detail',

@@ -2,7 +2,7 @@ import { Component, inject, signal, OnInit } from '@angular/core';
 import {Router} from '@angular/router';
 import { EventCard} from '../../components/event-card/event-card';
 import { EventService } from '../../../../core/services/event';
-import { Event } from '../../../../models';
+import { Event } from '../../../../core/models';
 
 
 @Component({

@@ -1,7 +1,7 @@
 import { Component, input, output } from '@angular/core';
 import {DatePipe} from '@angular/common';
 import {RouterLink} from '@angular/router';
-import { Event } from '../../../../models/event.model';
+import { Event } from '../../../../core/models/event.model';
 @Component({
   imports: [DatePipe, RouterLink],
   selector: 'app-event-card',
