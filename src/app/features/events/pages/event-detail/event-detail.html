@@ -1,0 +1,177 @@
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
+
+  <!-- 1. Back Navigation Button -->
+  <a routerLink="/events" 
+     class="inline-flex items-center gap-2 text-xs font-bold text-muted hover:text-main transition-colors group">
+    <svg class="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+    </svg>
+    <span>Back to Events</span>
+  </a>
+
+  @if (isLoading()) {
+    <div class="space-y-6 animate-pulse">
+      <div class="w-full aspect-[21/9] rounded-3xl bg-elevated border border-subtle"></div>
+      <div class="h-10 w-2/3 rounded-xl bg-elevated"></div>
+      <div class="h-24 w-full rounded-2xl bg-elevated"></div>
+    </div>
+  } @else if (event()) {
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+      
+      <!-- Left Column: Event Media & Details (7 cols) -->
+      <div class="lg:col-span-7 space-y-8">
+        
+        <!-- 16:9 High-Res Banner Image with Gold Date Badge -->
+        <div class="relative w-full aspect-[16/9] rounded-3xl overflow-hidden bg-elevated border border-subtle shadow-sm">
+          <img [src]="event()!.imageUrl || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1200&q=80'" 
+               [alt]="event()!.name"
+               class="w-full h-full object-cover" />
+
+          <!-- Gold Date Badge Overlay -->
+          <div class="absolute top-4 left-4 px-3.5 py-2 rounded-2xl bg-primary text-[#171717] shadow-md flex flex-col items-center leading-none font-black">
+            <span class="text-xs uppercase tracking-wider">
+              {{ event()!.startDate | date:'MMM' }}
+            </span>
+            <span class="text-lg mt-0.5">
+              {{ event()!.startDate | date:'dd' }}
+            </span>
+          </div>
+
+          <!-- Status Badge -->
+          <div class="absolute top-4 right-4">
+            <span class="px-3 py-1 rounded-full text-xs font-bold bg-accent text-white dark:text-[#171717] shadow-sm flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-primary"></span>
+              {{ event()!.status }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Event Headline & Meta -->
+        <div class="space-y-4">
+          <h1 class="text-3xl sm:text-4xl font-black text-main tracking-tight leading-tight">
+            {{ event()!.name }}
+          </h1>
+
+          <!-- Meta Pills (Location + Time) -->
+          <div class="flex flex-wrap items-center gap-4 text-xs font-medium text-muted">
+            <div class="flex items-center gap-1.5 bg-elevated px-3 py-1.5 rounded-full border border-subtle">
+              <svg class="w-4 h-4 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              <span>{{ event()!.location }}</span>
+            </div>
+
+            <div class="flex items-center gap-1.5 bg-elevated px-3 py-1.5 rounded-full border border-subtle">
+              <svg class="w-4 h-4 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <span>{{ event()!.startDate | date:'fullDate' }} ({{ event()!.startDate | date:'shortTime' }})</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Full Description -->
+        <div class="pt-6 border-t border-subtle space-y-3">
+          <h3 class="text-base font-extrabold text-main">About This Event</h3>
+          <p class="text-sm text-muted leading-relaxed whitespace-pre-line">
+            {{ event()!.description || 'Join us for this exciting live event in Addis Ababa. Select your preferred ticket tier from the options to reserve your seats.' }}
+          </p>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Interactive Ticket Tier Selector (5 cols) -->
+      <div class="lg:col-span-5 space-y-6">
+        
+        <div class="bg-card rounded-3xl border border-subtle p-6 sm:p-8 shadow-sm space-y-6 sticky top-28">
+          
+          <div>
+            <h2 class="text-lg font-black text-main">Select Tickets</h2>
+            <p class="text-xs text-muted mt-1">Holds are guaranteed for 15 minutes upon reservation</p>
+          </div>
+
+          <!-- Ticket Tiers List (@for loop) -->
+          <div class="space-y-3">
+            @for (ticket of ticketTypes(); track ticket.id) {
+              <div (click)="selectTicket(ticket.id)"
+                   [class]="selectedTicketId() === ticket.id 
+                     ? 'border-primary ring-2 ring-primary/20 bg-elevated' 
+                     : 'border-subtle bg-card hover:border-primary/40'"
+                   class="p-4 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-4">
+                
+                <div class="space-y-1">
+                  <div class="flex items-center gap-2">
+                    <span class="text-sm font-bold text-main">{{ ticket.name }}</span>
+                    @if (ticket.availableQuantity === 0) {
+                      <span class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-rose-600 text-white">Sold Out</span>
+                    } @else if (ticket.availableQuantity < 20) {
+                      <span class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-primary text-[#171717]">Selling Fast</span>
+                    }
+                  </div>
+                  
+                  <div class="flex items-center gap-2 text-xs text-muted">
+                    <span>{{ ticket.availableQuantity }} seats left</span>
+                    <span>•</span>
+                    <span>Sales end {{ ticket.endDate | date:'mediumDate' }}</span>
+                  </div>
+                </div>
+
+                <!-- Price -->
+                <div class="text-right flex-shrink-0">
+                  <span class="text-base font-black text-main">
+                    {{ ticket.price | currency }}
+                  </span>
+                </div>
+
+              </div>
+            } @empty {
+              <div class="p-6 text-center rounded-2xl bg-elevated border border-dashed border-subtle text-xs text-muted">
+                No tickets currently available for this event.
+              </div>
+            }
+          </div>
+
+          @if (selectedTicket()) {
+            <!-- Quantity Counter -->
+            <div class="pt-4 border-t border-subtle flex items-center justify-between">
+              <span class="text-xs font-bold text-main">Quantity</span>
+              
+              <div class="flex items-center gap-3 bg-elevated px-3 py-1.5 rounded-xl border border-subtle">
+                <button (click)="decrementQuantity()" 
+                        [disabled]="selectedQuantity() <= 1"
+                        class="text-main hover:text-primary font-bold disabled:opacity-30 text-base"
+                        type="button">-</button>
+                <span class="text-xs font-extrabold text-main w-4 text-center">{{ selectedQuantity() }}</span>
+                <button (click)="incrementQuantity()" 
+                        [disabled]="selectedQuantity() >= 10 || selectedQuantity() >= selectedTicket()!.availableQuantity"
+                        class="text-main hover:text-primary font-bold disabled:opacity-30 text-base"
+                        type="button">+</button>
+              </div>
+            </div>
+
+            <!-- Total Price Summary -->
+            <div class="flex items-center justify-between text-sm font-bold">
+              <span class="text-muted">Total Amount</span>
+              <span class="text-xl font-black text-main">{{ totalPrice() | currency }}</span>
+            </div>
+
+            <!-- Solid Black Ink Reserve CTA (Disabled if Sold Out via HATEOAS canReserve) -->
+            <button (click)="onReserve()"
+                    [disabled]="!canReserve()"
+                    type="button"
+                    class="w-full py-4 rounded-2xl bg-accent hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed text-white dark:text-[#171717] text-sm font-bold uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2">
+              <span>{{ canReserve() ? 'Reserve Tickets (15-Min Hold)' : 'Tier Unavailable' }}</span>
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </button>
+          }
+
+        </div>
+
+      </div>
+
+    </div>
+  }
+</div>
