@@ -13,7 +13,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes, withComponentInputBinding()),
 
     
-    provideHttpClient(),
+    provideHttpClient(withInterceptors([errorInterceptor])),
 
     provideAnimationsAsync(),
    
