@@ -20,11 +20,11 @@
     </button>
   </div>
 
-  <!-- 2. Angular Material MatTable (Module 9 Session 2 Slide 8) -->
+  <!-- 2. Angular Material MatTable -->
   <div class="bg-card rounded-3xl border border-subtle overflow-hidden shadow-sm">
     
     <div class="overflow-x-auto">
-      <table mat-table [dataSource]="events()" class="w-full text-left">
+      <table mat-table [dataSource]="eventStore.entities()" class="w-full text-left">
         
         <!-- Event Name Column -->
         <ng-container matColumnDef="name">
@@ -124,7 +124,7 @@
 
     <!-- 3. Angular Material MatPaginator -->
     <mat-paginator 
-      [length]="totalCount()"
+      [length]="eventStore.totalCount()"
       [pageSize]="pageSize()"
       [pageSizeOptions]="[5, 10, 25]"
       (page)="onPageChange($event)"

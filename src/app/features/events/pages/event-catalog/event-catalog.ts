@@ -1,61 +1,46 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
-import {Router} from '@angular/router';
-import { EventCard} from '../../components/event-card/event-card';
-import { EventService } from '../../../../core/services/event';
+import { Router } from '@angular/router';
+import { EventCard } from '../../components/event-card/event-card';
+import { EventStore } from '../../../../core/stores/event.store';
 import { Event } from '../../../../core/models';
 
-
 @Component({
-  imports: [EventCard],
-  standalone: true,
   selector: 'app-event-catalog',
-  styleUrl: './event-catalog.scss',
+  standalone: true,
+  imports: [EventCard],
   templateUrl: './event-catalog.html',
+  styleUrl: './event-catalog.scss'
 })
-export class EventCatalogComponent implements OnInit{
-  private eventService = inject(EventService);
-  private router = inject(Router)
-  
-  events = signal<Event[]>([]);
-  isLoading = signal<boolean>(true);
-  searchQuery= signal<string>('');
-  selectedCategory = signal <string>('All');
+export class EventCatalogComponent implements OnInit {
+  // MODULE 9 SESSION 1: Inject Global SignalStore as single source of truth!
+  readonly eventStore = inject(EventStore);
+  private router = inject(Router);
 
-  categories = ['All', 'Technology', 'Conference', 'Music $ Concerts', 'Business', 'Workshops'];
+  searchQuery = signal<string>('');
+  selectedCategory = signal<string>('All');
+  categories = ['All', 'Technology', 'Conferences', 'Music & Concerts', 'Business', 'Workshops'];
 
-  ngOnInit(){
-    this.loadEvents();
-  }
-  loadEvents(search?:string){
-this.isLoading.set(true);
-this.eventService.getEvents({search,pageSize:12}).subscribe({
-  next:(res)=>{
-    this.events.set(res.items);
-    this.isLoading.set(false);
-
-  },
-  error:()=>{
-    this.isLoading.set(false);
-  }
-});
+  ngOnInit() {
+    // Initial load from store
+    this.eventStore.loadEvents();
   }
 
-  onSearchChange(event: globalThis.Event){
+  onSearchChange(event: globalThis.Event) {
     const value = (event.target as HTMLInputElement).value;
     this.searchQuery.set(value);
-    this.loadEvents(value);
-
+    this.eventStore.loadEvents({ search: value, pageSize: 12 });
   }
 
-  selectCategory(category:string){
+  selectCategory(category: string) {
     this.selectedCategory.set(category);
-    if(category === 'All'){
-      this.loadEvents();
-    }else{
-      this.loadEvents(category);
-    }}
-
-    onBookEvent(event:Event){
-      this.router.navigate(['/events', event.id]);
+    if (category === 'All') {
+      this.eventStore.loadEvents({ pageSize: 12 });
+    } else {
+      this.eventStore.loadEvents({ search: category, pageSize: 12 });
     }
   }
+
+  onBookEvent(event: Event) {
+    this.router.navigate(['/events', event.id]);
+  }
+}

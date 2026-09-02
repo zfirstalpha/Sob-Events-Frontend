@@ -56,7 +56,7 @@
     </div>
 
     <!-- Loading Skeleton -->
-    @if (isLoading()) {
+    @if (eventStore.isLoading()) {
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         @for (i of [1,2,3,4,5,6]; track i) {
           <div class="h-80 rounded-3xl bg-elevated animate-pulse border border-subtle"></div>
@@ -64,7 +64,7 @@
       </div>
     } @else {
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        @for (event of events(); track event.id) {
+        @for (event of eventStore.entities(); track event.id) {
           @defer (on viewport; prefetch on idle(500)) {
             <app-event-card 
               [event]="event" 
