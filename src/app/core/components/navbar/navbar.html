@@ -14,7 +14,7 @@
           </div>
         </a>
 
-        <!-- 2. Search Bar (Using bg-elevated + bg-primary) -->
+        <!-- 2. Search Bar -->
         <div class="hidden lg:flex items-center relative w-80">
           <input type="text" 
                  placeholder="Search events, venues, concerts..." 
@@ -39,16 +39,23 @@
              class="px-3.5 py-2 text-sm font-medium text-muted hover:text-main transition-colors">
             Explore Events
           </a>
-          <a routerLink="/my-reservations" 
-             routerLinkActive="text-main font-bold border-b-2 border-primary"
-             class="px-3.5 py-2 text-sm font-medium text-muted hover:text-main transition-colors">
-            My Bookings
-          </a>
-          <a routerLink="/organizer/events" 
-             class="px-3.5 py-2 text-sm font-medium text-muted hover:text-main transition-colors flex items-center gap-1.5">
-            <span class="w-2 h-2 rounded-full bg-primary"></span>
-            Host an Event
-          </a>
+
+          @if (authStore.isAuthenticated()) {
+            <a routerLink="/my-reservations" 
+               routerLinkActive="text-main font-bold border-b-2 border-primary"
+               class="px-3.5 py-2 text-sm font-medium text-muted hover:text-main transition-colors">
+              My Bookings
+            </a>
+          }
+
+          <!-- Organizer Studio is ONLY visible if user has Organizer Role! -->
+          @if (authStore.isOrganizer()) {
+            <a routerLink="/organizer/events" 
+               class="px-3.5 py-2 text-sm font-medium text-muted hover:text-main transition-colors flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-primary"></span>
+              Organizer Studio
+            </a>
+          }
         </nav>
 
         <div class="h-5 w-px bg-subtle"></div>
@@ -69,17 +76,33 @@
           }
         </button>
 
-        <!-- 5. Black Ink Solid CTA -->
-        <div class="flex items-center gap-2">
-          <a routerLink="/login" 
-             class="px-4 py-2 text-sm font-semibold text-main hover:text-muted transition-colors">
-            Sign In
-          </a>
-          <a routerLink="/register" 
-             class="px-5 py-2.5 rounded-full bg-accent hover:opacity-90 text-white dark:text-[#171717] text-xs font-bold uppercase tracking-wider transition-all shadow-sm">
-            Sign Up
-          </a>
-        </div>
+        <!-- 5. Dynamic Auth State Buttons -->
+        @if (authStore.isAuthenticated()) {
+          <div class="flex items-center gap-3">
+            <div class="flex flex-col text-right">
+              <span class="text-xs font-bold text-main">{{ authStore.user()?.firstName }} {{ authStore.user()?.lastName }}</span>
+              <span class="text-[10px] font-mono text-muted uppercase tracking-wider">{{ authStore.user()?.role }}</span>
+            </div>
+            
+            <button (click)="authStore.logout()" 
+                    type="button" 
+                    class="px-3 py-1.5 rounded-xl bg-elevated hover:bg-subtle text-xs font-bold text-rose-500 border border-subtle transition-all">
+              Sign Out
+            </button>
+          </div>
+        } @else {
+          <div class="flex items-center gap-2">
+            <a routerLink="/login" 
+               class="px-4 py-2 text-sm font-semibold text-main hover:text-muted transition-colors">
+              Sign In
+            </a>
+            <a routerLink="/register" 
+               class="px-5 py-2.5 rounded-full bg-accent hover:opacity-90 text-white dark:text-[#171717] text-xs font-bold uppercase tracking-wider transition-all shadow-sm">
+              Sign Up
+            </a>
+          </div>
+        }
+
       </div>
 
       <!-- Mobile Hamburger Button -->
@@ -113,19 +136,36 @@
       <a routerLink="/events" (click)="closeMobileMenu()" class="block px-3 py-2.5 rounded-lg text-base font-medium text-main hover:bg-elevated">
         Explore Events
       </a>
-      <a routerLink="/my-reservations" (click)="closeMobileMenu()" class="block px-3 py-2.5 rounded-lg text-base font-medium text-main hover:bg-elevated">
-        My Bookings
-      </a>
-      <a routerLink="/organizer/events" (click)="closeMobileMenu()" class="block px-3 py-2.5 rounded-lg text-base font-medium text-main hover:bg-elevated">
-        Host an Event
-      </a>
+      
+      @if (authStore.isAuthenticated()) {
+        <a routerLink="/my-reservations" (click)="closeMobileMenu()" class="block px-3 py-2.5 rounded-lg text-base font-medium text-main hover:bg-elevated">
+          My Bookings
+        </a>
+      }
+
+      @if (authStore.isOrganizer()) {
+        <a routerLink="/organizer/events" (click)="closeMobileMenu()" class="block px-3 py-2.5 rounded-lg text-base font-medium text-main hover:bg-elevated">
+          Organizer Studio
+        </a>
+      }
+
       <div class="pt-4 border-t border-subtle flex flex-col gap-2">
-        <a routerLink="/login" (click)="closeMobileMenu()" class="w-full text-center py-2.5 text-sm font-semibold text-main">
-          Sign In
-        </a>
-        <a routerLink="/register" (click)="closeMobileMenu()" class="w-full text-center py-3 rounded-full bg-accent text-white dark:text-[#171717] text-xs font-bold uppercase tracking-wider">
-          Sign Up
-        </a>
+        @if (authStore.isAuthenticated()) {
+          <div class="px-3 py-2 text-xs font-bold text-muted">
+            Signed in as {{ authStore.user()?.email }} ({{ authStore.user()?.role }})
+          </div>
+          <button (click)="authStore.logout(); closeMobileMenu()" 
+                  class="w-full text-center py-2.5 rounded-xl bg-elevated text-rose-500 text-xs font-bold border border-subtle">
+            Sign Out
+          </button>
+        } @else {
+          <a routerLink="/login" (click)="closeMobileMenu()" class="w-full text-center py-2.5 text-sm font-semibold text-main">
+            Sign In
+          </a>
+          <a routerLink="/register" (click)="closeMobileMenu()" class="w-full text-center py-3 rounded-full bg-accent text-white dark:text-[#171717] text-xs font-bold uppercase tracking-wider">
+            Sign Up
+          </a>
+        }
       </div>
     </div>
   }

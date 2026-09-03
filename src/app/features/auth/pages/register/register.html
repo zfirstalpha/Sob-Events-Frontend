@@ -1,0 +1,121 @@
+<div class="min-h-[85vh] flex items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
+  <div class="max-w-lg w-full space-y-8 bg-card p-8 sm:p-10 rounded-3xl border border-subtle shadow-sm">
+    
+    <!-- Header -->
+    <div class="text-center space-y-2">
+      <img src="/logo.jpg" alt="SobEvents" class="w-12 h-12 rounded-2xl mx-auto object-cover border border-subtle" />
+      <h1 class="text-2xl font-black text-main tracking-tight">Create Your Account</h1>
+      <p class="text-xs text-muted">Join SobEvents to discover tickets or host your own events.</p>
+    </div>
+
+    <!-- Role Picker (Attendee vs Organizer) -->
+    <div class="space-y-2">
+      <label class="text-xs font-bold uppercase tracking-wider text-muted block text-center">Select Account Type</label>
+      <div class="grid grid-cols-2 gap-3">
+        
+        <!-- Attendee Option -->
+        <button (click)="setRole('Attendee')" 
+                type="button" 
+                [class]="selectedRole() === 'Attendee' 
+                  ? 'border-primary ring-2 ring-primary/20 bg-elevated' 
+                  : 'border-subtle bg-card hover:border-primary/40'"
+                class="p-4 rounded-2xl border text-left transition-all flex flex-col justify-between">
+          <div class="flex items-center justify-between w-full mb-1">
+            <span class="text-sm font-extrabold text-main">🎟️ Attendee</span>
+            @if (selectedRole() === 'Attendee') {
+              <span class="w-2 h-2 rounded-full bg-primary"></span>
+            }
+          </div>
+          <span class="text-[11px] text-muted">Book & discover live tickets</span>
+        </button>
+
+        <!-- Organizer Option -->
+        <button (click)="setRole('Organizer')" 
+                type="button" 
+                [class]="selectedRole() === 'Organizer' 
+                  ? 'border-primary ring-2 ring-primary/20 bg-elevated' 
+                  : 'border-subtle bg-card hover:border-primary/40'"
+                class="p-4 rounded-2xl border text-left transition-all flex flex-col justify-between">
+          <div class="flex items-center justify-between w-full mb-1">
+            <span class="text-sm font-extrabold text-main">🎪 Organizer</span>
+            @if (selectedRole() === 'Organizer') {
+              <span class="w-2 h-2 rounded-full bg-primary"></span>
+            }
+          </div>
+          <span class="text-[11px] text-muted">Create events & sell tickets</span>
+        </button>
+
+      </div>
+    </div>
+
+    <!-- Error Banner -->
+    @if (errorMessage()) {
+      <div class="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs font-semibold text-center">
+        {{ errorMessage() }}
+      </div>
+    }
+
+    <!-- Reactive Form -->
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-4">
+      
+      <!-- First & Last Name Grid -->
+      <div class="grid grid-cols-2 gap-3">
+        <div class="space-y-1">
+          <label class="text-xs font-bold uppercase tracking-wider text-muted">First Name</label>
+          <input type="text" formControlName="firstName" placeholder="Abebe"
+                 class="w-full px-4 py-3 rounded-xl bg-elevated border border-subtle text-sm font-medium text-main placeholder-muted focus:outline-none focus:border-primary transition-all" />
+        </div>
+        <div class="space-y-1">
+          <label class="text-xs font-bold uppercase tracking-wider text-muted">Last Name</label>
+          <input type="text" formControlName="lastName" placeholder="Bekele"
+                 class="w-full px-4 py-3 rounded-xl bg-elevated border border-subtle text-sm font-medium text-main placeholder-muted focus:outline-none focus:border-primary transition-all" />
+        </div>
+      </div>
+
+      <!-- Username -->
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-wider text-muted">Username</label>
+        <input type="text" formControlName="username" placeholder="abebe_b"
+               class="w-full px-4 py-3 rounded-xl bg-elevated border border-subtle text-sm font-medium text-main placeholder-muted focus:outline-none focus:border-primary transition-all" />
+      </div>
+
+      <!-- Email -->
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-wider text-muted">Email Address</label>
+        <input type="email" formControlName="email" placeholder="abebe@example.com"
+               class="w-full px-4 py-3 rounded-xl bg-elevated border border-subtle text-sm font-medium text-main placeholder-muted focus:outline-none focus:border-primary transition-all" />
+      </div>
+
+      <!-- Password -->
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-wider text-muted">Password (Min 8 Characters)</label>
+        <input type="password" formControlName="password" placeholder="••••••••"
+               class="w-full px-4 py-3 rounded-xl bg-elevated border border-subtle text-sm font-medium text-main placeholder-muted focus:outline-none focus:border-primary transition-all" />
+      </div>
+
+      <!-- Submit CTA -->
+      <button [disabled]="authStore.isLoading()"
+              type="submit" 
+              class="w-full mt-2 py-3.5 rounded-xl bg-accent hover:opacity-90 disabled:opacity-50 text-white dark:text-[#171717] text-xs font-bold uppercase tracking-wider transition-all shadow-sm flex items-center justify-center gap-2">
+        @if (authStore.isLoading()) {
+          <span class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+          <span>Creating Account...</span>
+        } @else {
+          <span>Register as {{ selectedRole() }}</span>
+        }
+      </button>
+
+    </form>
+
+    <!-- Footer Switch Link -->
+    <div class="text-center pt-4 border-t border-subtle">
+      <p class="text-xs text-muted">
+        Already have an account? 
+        <a routerLink="/login" class="font-bold text-main hover:text-primary transition-colors ml-1">
+          Sign In
+        </a>
+      </p>
+    </div>
+
+  </div>
+</div>

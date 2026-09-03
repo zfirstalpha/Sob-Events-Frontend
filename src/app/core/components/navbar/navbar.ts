@@ -1,7 +1,7 @@
-import { Component, signal, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import {Theme} from '../../services/theme';
-
+import { Theme } from '../../services/theme';
+import { AuthStore } from '../../stores/auth.store'; // Add AuthStore
 
 @Component({
   selector: 'app-navbar',
@@ -10,14 +10,16 @@ import {Theme} from '../../services/theme';
   templateUrl: './navbar.html',
   styleUrl: './navbar.scss'
 })
-export class NavbarComponent{
+export class NavbarComponent {
   themeService = inject(Theme);
-  mobileMenuOpen =signal(false);//zonless signal to track mobile menu
+  readonly authStore = inject(AuthStore); // Injected global AuthStore
+  mobileMenuOpen = signal(false);
 
-  toggleMobileMenu(){
+  toggleMobileMenu() {
     this.mobileMenuOpen.update(open => !open);
   }
-  closeMobileMenu(){
+
+  closeMobileMenu() {
     this.mobileMenuOpen.set(false);
   }
 }

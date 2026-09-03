@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-
+import { authGuard, organizerGuard } from './core/guards/auth.guard';
 export const routes: Routes = [
   { path: '', redirectTo: 'events', pathMatch: 'full' },
 
@@ -20,6 +20,7 @@ export const routes: Routes = [
   // Organizer Management Page
   {
     path: 'organizer/events',
+    canActivate: [organizerGuard],
     loadComponent: () => import('./features/organizer/pages/organizer-events/organizer-events')
       .then(m => m.OrganizerEventsComponent)
   },
@@ -27,7 +28,18 @@ export const routes: Routes = [
   // Attendee Bookings Portal
   {
     path: 'my-reservations',
+    canActivate: [authGuard],
     loadComponent: () => import('./features/reservations/pages/my-reservations/my-reservations')
       .then(m => m.MyReservationsComponent)
+  },
+   {
+    path: 'login',
+    loadComponent: () => import('./features/auth/pages/login/login')
+      .then(m => m.LoginComponent)
+  },
+  {
+    path: 'register',
+    loadComponent: () => import('./features/auth/pages/register/register')
+      .then(m => m.RegisterComponent)
   }
 ];
