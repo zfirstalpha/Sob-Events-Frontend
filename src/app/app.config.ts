@@ -3,7 +3,9 @@ import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { routes } from './app.routes';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideHttpClient, withInterceptors, withXsrfConfiguration } from '@angular/common/http';
+import { EventService } from './core/services/event';
+import {credentialsInterceptor} from './core/interceptors/credentials.interceptor';
 
 
 export const appConfig: ApplicationConfig = {
@@ -13,9 +15,13 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes, withComponentInputBinding()),
 
     
-    provideHttpClient(withInterceptors([errorInterceptor])),
+    provideHttpClient(
+      withInterceptors([errorInterceptor, credentialsInterceptor]),
 
-    provideAnimationsAsync(),
+    withXsrfConfiguration({
+      cookieName: 'XSRF-TOKEN',
+      headerName: 'X-XSRF-TOKEN'
+     }) ,)
    
     
   ]

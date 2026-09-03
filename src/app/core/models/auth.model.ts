@@ -1,7 +1,9 @@
-export interface AuthResponse {
-  accessToken: string;
-  refreshToken: string;
-  expiresAt: string;
+export interface UserDto {
+  id: number;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: 'Organizer' | 'Attendee';
 }
 
 export interface LoginRequest {
