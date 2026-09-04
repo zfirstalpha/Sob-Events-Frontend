@@ -1,0 +1,103 @@
+<div class="bg-card text-main p-6 sm:p-8 rounded-3xl border border-subtle max-w-3xl w-full space-y-6">
+  
+  <!-- Dialog Header -->
+  <div class="flex items-center justify-between pb-4 border-b border-subtle">
+    <div>
+      <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-elevated text-[10px] font-bold uppercase tracking-wider text-muted border border-subtle mb-1">
+        <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+        Attendee Verification
+      </div>
+      <h2 class="text-xl font-black text-main">{{ data.event.name }}</h2>
+      <p class="text-xs text-muted mt-0.5">Verify manual Telebirr / CBE transaction references and approve passes</p>
+    </div>
+
+    <button (click)="onClose()" class="p-2 text-muted hover:text-main rounded-full">
+      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Bookings / Approvals List -->
+  @if (isLoading()) {
+    <div class="h-40 rounded-2xl bg-elevated animate-pulse border border-subtle"></div>
+  } @else {
+    <div class="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
+      @for (res of reservations(); track res.id) {
+        <div class="p-4 rounded-2xl bg-elevated border border-subtle flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          
+          <!-- Attendee & Payment Reference Info -->
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <span class="text-sm font-extrabold text-main">{{ res.attendeeName }}</span>
+              <span class="text-xs text-muted">({{ res.attendeeEmail }})</span>
+              
+              <!-- Status Pill -->
+              @if (res.status === 'PendingApproval') {
+                <span class="px-2 py-0.5 rounded text-[10px] font-black bg-amber-500/20 text-amber-500 border border-amber-500/30">
+                  Needs Verification
+                </span>
+              } @else if (res.status === 'Confirmed') {
+                <span class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-accent text-white dark:text-[#171717]">
+                  Approved
+                </span>
+              } @else {
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-card text-muted border border-subtle">
+                  {{ res.status }}
+                </span>
+              }
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2 text-xs text-muted">
+              <span class="font-bold text-main">{{ res.quantity }}x {{ res.ticketTypeName }}</span>
+              <span>•</span>
+              <span>Reserved {{ res.reservedAt | date:'short' }}</span>
+            </div>
+
+            <!-- Transaction Reference Number -->
+            @if (res.transactionReference) {
+              <div class="mt-2 p-2 rounded-xl bg-card border border-subtle inline-flex items-center gap-2 text-xs">
+                <span class="font-bold text-muted">Tx Reference:</span>
+                <span class="font-mono font-black text-main bg-primary/20 text-[#171717] dark:text-primary px-2 py-0.5 rounded">
+                  {{ res.transactionReference }}
+                </span>
+              </div>
+            } @else {
+              <span class="text-[11px] text-muted italic">No transaction reference submitted yet.</span>
+            }
+          </div>
+
+          <!-- Organizer Action Buttons -->
+          @if (res.status === 'PendingApproval' || res.status === 'Reserved') {
+            <div class="flex items-center gap-2 self-end sm:self-center flex-shrink-0">
+              <button (click)="onReject(res.id)" 
+                      type="button" 
+                      class="px-3.5 py-2 rounded-xl text-rose-500 hover:bg-rose-500/10 text-xs font-bold transition-all">
+                Reject
+              </button>
+
+              <button (click)="onApprove(res.id)" 
+                      type="button" 
+                      class="px-4 py-2 rounded-xl bg-primary hover:bg-primary-hover text-[#171717] text-xs font-black transition-all shadow-sm">
+                Approve Pass
+              </button>
+            </div>
+          }
+
+        </div>
+      } @empty {
+        <div class="p-8 rounded-2xl bg-elevated border border-dashed border-subtle text-center space-y-1">
+          <p class="text-xs font-bold text-main">No attendee bookings yet for this event.</p>
+          <p class="text-[11px] text-muted">When attendees reserve tickets or submit bank transfer IDs, they will appear here.</p>
+        </div>
+      }
+    </div>
+  }
+
+  <div class="pt-4 border-t border-subtle flex justify-end">
+    <button (click)="onClose()" type="button" class="px-5 py-2.5 rounded-xl bg-accent text-white dark:text-[#171717] text-xs font-bold uppercase tracking-wider">
+      Done
+    </button>
+  </div>
+
+</div>

@@ -42,7 +42,7 @@ export const ReservationStore = signalStore(
     }),
 
 
-    activeBookingsCount: computed(() => store.entities().filter(r => r.status === 'Reserved' || r.status === 'Paid').length)
+    activeBookingsCount: computed(() => store.entities().filter(r => r.status === 'Reserved' || r.status === 'PendingApproval' || r.status === 'Confirmed').length)
   })),
 
   

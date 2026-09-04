@@ -8,6 +8,7 @@ import { EventStore } from '../../../../core/stores/event.store';
 import { Event } from '../../../../core/models';
 import { CreateEventDialogComponent } from '../../components/create-event-dialog/create-event-dialog';
 import { ManageTicketsDialogComponent } from '../../components/manage-tickets-dialog/manage-tickets-dialog'; 
+import { EventApprovalsDialogComponent } from '../../components/event-approvals-dialog/event-approvals-dialog';
 
 @Component({
   selector: 'app-organizer-events',
@@ -67,4 +68,11 @@ export class OrganizerEventsComponent implements OnInit {
     if (!confirm('Are you sure you want to soft-delete this event?')) return;
     this.eventStore.deleteEvent(id);
   }
+
+  openApprovalsDialog(event: Event) {
+  this.dialog.open(EventApprovalsDialogComponent, {
+    width: '750px',
+    data: { event }
+  });
+}
 }

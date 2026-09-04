@@ -14,9 +14,11 @@
           </div>
         </a>
 
-        <!-- 2. Search Bar -->
+        
+       <!-- 2. Search Bar -->
         <div class="hidden lg:flex items-center relative w-80">
           <input type="text" 
+                 (keydown)="onHeaderSearch($event)"
                  placeholder="Search events, venues, concerts..." 
                  class="w-full pl-4 pr-12 py-2.5 text-xs font-medium rounded-full bg-elevated border border-subtle text-main placeholder-muted focus:outline-none focus:border-primary transition-all shadow-inner" />
           

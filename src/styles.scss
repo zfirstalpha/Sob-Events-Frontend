@@ -1,5 +1,5 @@
 @import "tailwindcss";
-
+@import "@angular/material/prebuilt-themes/azure-blue.css";
 // Enable class-based dark mode (.dark) in Tailwind v4
 @variant dark (&:where(.dark, .dark *));
 
@@ -14,6 +14,21 @@
   --color-main: var(--main);
   --color-muted: var(--muted);
   --color-subtle: var(--subtle);
+}
+.cdk-overlay-dark-backdrop {
+  background: rgba(0, 0, 0, 0.6) !important;
+  backdrop-filter: blur(4px);
+}
+.mat-mdc-dialog-container .mdc-dialog__surface {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border-radius: 1.5rem !important;
+}
+
+.error-snackbar {
+  --mdc-snackbar-container-color: #ef4444 !important;
+  --mdc-snackbar-supporting-text-color: #ffffff !important;
+  font-weight: 700 !important;
 }
 
 // Light Mode Values

@@ -88,10 +88,12 @@
               <!-- NEW: Manage Tickets Button -->
               <button (click)="openTicketsDialog(event)" 
                       type="button" 
-                      class="px-3 py-1.5 rounded-lg bg-elevated hover:bg-subtle text-main text-xs font-bold transition-all border border-subtle flex items-center gap-1">
-                <span>🎟️ Tickets</span>
+                      class="px-3 py-1.5 rounded-lg bg-elevated hover:bg-subtle text-main text-xs font-bold transition-all border border-subtle">Tickets</button>
+              <!-- NEW: View Approvals Button --> <button (click)="openApprovalsDialog(event)" 
+                      type="button" 
+                      class="px-3 py-1.5 rounded-lg bg-elevated hover:bg-subtle text-main text-xs font-bold transition-all border border-subtle">
+                 Attendees
               </button>
-
               <!-- Publish Button (If Draft) -->
               @if (event.status === 'Draft') {
                 <button (click)="onPublish(event.id)" 

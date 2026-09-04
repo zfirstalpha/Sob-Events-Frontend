@@ -1,7 +1,8 @@
 import { Component, inject, signal } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import {Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { Theme } from '../../services/theme';
 import { AuthStore } from '../../stores/auth.store'; // Add AuthStore
+import { EventStore } from '../../stores/event.store';
 
 @Component({
   selector: 'app-navbar',
@@ -11,8 +12,10 @@ import { AuthStore } from '../../stores/auth.store'; // Add AuthStore
   styleUrl: './navbar.scss'
 })
 export class NavbarComponent {
+  private router = inject(Router);
   themeService = inject(Theme);
-  readonly authStore = inject(AuthStore); // Injected global AuthStore
+  readonly authStore = inject(AuthStore);
+  readonly eventStore = inject(EventStore); 
   mobileMenuOpen = signal(false);
 
   toggleMobileMenu() {
@@ -21,5 +24,14 @@ export class NavbarComponent {
 
   closeMobileMenu() {
     this.mobileMenuOpen.set(false);
+  }
+
+   onHeaderSearch(event: globalThis.KeyboardEvent) {
+    if (event.key === 'Enter') {
+      const input = event.target as HTMLInputElement;
+      const query = input.value.trim();
+      this.router.navigate(['/events']);
+      this.eventStore.loadEvents({ page: 1, search: query });
+    }
   }
 }
