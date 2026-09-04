@@ -99,12 +99,13 @@
               Your tickets are Reserved Make the payment within 15 minutes to confirm your booking.
             </p>
 
-            <div class="pt-2 flex flex-col gap-2">
+           <div class="pt-2 flex flex-col gap-2">
               <a routerLink="/my-reservations" 
                  class="w-full py-3 rounded-xl bg-accent text-white dark:text-[#171717] text-xs font-bold text-center uppercase tracking-wider shadow-sm hover:opacity-90 transition-all">
                 View in My Bookings
               </a>
-              <button (click)="reservationStore.clearHold()" 
+              <!-- Properly triggers backend release -->
+              <button (click)="onReleaseHold()" 
                       type="button" 
                       class="w-full py-2 text-xs font-semibold text-muted hover:text-rose-500 transition-colors">
                 Release Hold

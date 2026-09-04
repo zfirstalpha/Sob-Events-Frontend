@@ -12,10 +12,9 @@ interface AuthState {
 
 const initialState: AuthState = {
   user: null,
-  isLoading: true, // true on startup while checking /me
+  isLoading: false,
   error: null
 };
-
 
 export const AuthStore = signalStore(
   { providedIn: 'root' },
@@ -30,27 +29,9 @@ export const AuthStore = signalStore(
     authService = inject(AuthService),
     router = inject(Router)
   ) => ({
-    
-    // 1. Checks session on application startup via GET /api/v1/auth/me
-    initializeSession() {
-      patchState(store, { isLoading: true });
 
-      authService.getMe().subscribe({
-        next: (user) => {
-          patchState(store, { user, isLoading: false, error: null });
-        },
-        error: () => {
-          // If /me returns 401, attempt silent cookie refresh!
-          authService.refresh().subscribe({
-            next: (user) => {
-              patchState(store, { user, isLoading: false, error: null });
-            },
-            error: () => {
-              patchState(store, { user: null, isLoading: false });
-            }
-          });
-        }
-      });
+    setUser(user: UserDto | null) {
+      patchState(store, { user, isLoading: false, error: null });
     },
 
     login(credentials: LoginRequest, onSuccess?: () => void, onError?: (err: string) => void) {
@@ -89,10 +70,6 @@ export const AuthStore = signalStore(
           if (onError) onError(errorMsg);
         }
       });
-    },
-
-    setUser(user: UserDto | null) {
-      patchState(store, { user, isLoading: false });
     },
 
     logout() {

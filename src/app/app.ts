@@ -1,8 +1,8 @@
-import { Component, OnInit ,inject} from '@angular/core';
+import { Component, OnInit ,inject , OnDestroy} from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { NavbarComponent } from './core/components/navbar/navbar';
 import { Footer } from './core/components/footer/footer';
-import { AuthStore } from './core/stores/auth.store';
+import { SignalrService } from './core/services/signalr';
 
 @Component({
   selector: 'app-root',
@@ -11,10 +11,15 @@ import { AuthStore } from './core/stores/auth.store';
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
-export class App implements OnInit {
-  private authStore = inject(AuthStore);
+export class App implements OnInit, OnDestroy {
+  private signalrService = inject(SignalrService);
 
   ngOnInit() {
-    this.authStore.initializeSession();
+    
+    this.signalrService.startConnection();
+  }
+
+  ngOnDestroy() {
+    this.signalrService.stopConnection();
   }
 }

@@ -1,5 +1,5 @@
-import { Component, inject, signal, computed, input, OnInit } from '@angular/core';
-import { DatePipe, CurrencyPipe } from '@angular/common';
+import { Component, inject, signal, computed, input, OnInit, effect } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Subject, exhaustMap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -7,12 +7,13 @@ import { EventService } from '../../../../core/services/event';
 import { TicketService } from '../../../../core/services/ticket';
 import { ReservationService } from '../../../../core/services/reservation';
 import { ReservationStore } from '../../../../core/stores/reservation.store';
+import { SignalrService } from '../../../../core/services/signalr'; // Injected SignalR!
 import { Event, TicketType } from '../../../../core/models';
 
 @Component({
   selector: 'app-event-detail',
   standalone: true,
-  imports: [DatePipe, CurrencyPipe, RouterLink],
+  imports: [DatePipe, RouterLink],
   templateUrl: './event-detail.html',
   styleUrl: './event-detail.scss'
 })
@@ -22,9 +23,9 @@ export class EventDetailComponent implements OnInit {
   private eventService = inject(EventService);
   private ticketService = inject(TicketService);
   private reservationService = inject(ReservationService);
+  private signalrService = inject(SignalrService);
   readonly reservationStore = inject(ReservationStore);
 
-  // MODULE 9 SESSION 3 SLIDE 9: Subject manual bus for handling click events
   private reserveClick$ = new Subject<{ ticketTypeId: number; quantity: number }>();
 
   event = signal<Event | null>(null);
@@ -54,26 +55,37 @@ export class EventDetailComponent implements OnInit {
   });
 
   constructor() {
-    // MODULE 9 SESSION 3 SLIDE 9: Defensive stream with exhaustMap & takeUntilDestroyed()!
+    // MODULE 9 SESSION 3: effect() listens for incoming WebSocket seat updates in real time!
+    effect(() => {
+      const update = this.signalrService.liveTicketUpdates();
+      if (update) {
+        // Dynamically update the ticket tier's remaining capacity on screen!
+        this.ticketTypes.update(tickets =>
+          tickets.map(t => t.id === update.ticketTypeId 
+            ? { ...t, availableQuantity: update.availableQuantity } 
+            : t
+          )
+        );
+      }
+    });
+
+    // Defensive booking stream with exhaustMap (Module 9 Slide 9)
     this.reserveClick$.pipe(
       exhaustMap(({ ticketTypeId, quantity }) => {
         this.isSubmitting.set(true);
         this.errorMessage.set(null);
 
-        return this.reservationService.createReservation(ticketTypeId, { quantity }).pipe(
-          // Defensive error handling
-        );
+        return this.reservationService.createReservation(ticketTypeId, { quantity });
       }),
       takeUntilDestroyed()
     ).subscribe({
       next: (reservation) => {
         this.isSubmitting.set(false);
-        // Lock in the 15-minute hold in our central store!
         this.reservationStore.setActiveHold(reservation);
       },
       error: (err) => {
         this.isSubmitting.set(false);
-        this.errorMessage.set(err.error?.detail || err.error?.title || 'Unable to reserve tickets. Please try again.');
+        this.errorMessage.set(err.error?.detail || 'Unable to reserve tickets. Please try again.');
       }
     });
   }
@@ -127,7 +139,6 @@ export class EventDetailComponent implements OnInit {
     }
   }
 
-  // Pushes into the defensive stream (Zero naked subscriptions inside click handler!)
   onReserveClick() {
     const ticket = this.selectedTicket();
     if (!ticket || !this.canReserve()) return;
@@ -136,5 +147,10 @@ export class EventDetailComponent implements OnInit {
       ticketTypeId: ticket.id,
       quantity: this.selectedQuantity()
     });
+  }
+
+  // Properly calls the backend to release the locked seats
+  onReleaseHold() {
+    this.reservationStore.releaseActiveHold();
   }
 }

@@ -123,7 +123,30 @@ export const ReservationStore = signalStore(
       clearHold() {
         if (timerInterval) clearInterval(timerInterval);
         patchState(store, { activeHold: null, holdSecondsRemaining: 0 });
-      }
+      },
+
+     
+      releaseActiveHold: rxMethod<void>(
+        pipe(
+          concatMap(() => {
+            const currentHold = store.activeHold();
+            if (!currentHold) return of(null);
+
+            // 1. Cancel the hold on the backend
+            return reservationService.cancelReservation(currentHold.id).pipe(
+              tap(() => {
+                if (timerInterval) clearInterval(timerInterval);
+                patchState(store, { activeHold: null, holdSecondsRemaining: 0 });
+                snackBar.open('Hold released. Seats returned to public pool.', 'Dismiss', { duration: 3000 });
+              }),
+              catchError((err) => {
+                snackBar.open(err.error?.detail || 'Failed to release hold.', 'Dismiss', { duration: 4000 });
+                return of(null);
+              })
+            );
+          })
+        )
+      ),
     };
   })
 );
