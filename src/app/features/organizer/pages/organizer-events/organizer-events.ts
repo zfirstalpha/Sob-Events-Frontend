@@ -3,9 +3,11 @@ import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog'; // Add this using
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { EventStore } from '../../../../core/stores/event.store';
-import { CreateEventDialogComponent } from '../../components/create-event-dialog/create-event-dialog'; // Add this import
+import { Event } from '../../../../core/models';
+import { CreateEventDialogComponent } from '../../components/create-event-dialog/create-event-dialog';
+import { ManageTicketsDialogComponent } from '../../components/manage-tickets-dialog/manage-tickets-dialog'; 
 
 @Component({
   selector: 'app-organizer-events',
@@ -17,7 +19,7 @@ import { CreateEventDialogComponent } from '../../components/create-event-dialog
 })
 export class OrganizerEventsComponent implements OnInit {
   readonly eventStore = inject(EventStore);
-  private dialog = inject(MatDialog); // Injected MatDialog service
+  private dialog = inject(MatDialog);
 
   displayedColumns: string[] = ['name', 'location', 'dates', 'status', 'actions'];
   pageSize = signal<number>(10);
@@ -29,7 +31,8 @@ export class OrganizerEventsComponent implements OnInit {
 
   loadEvents() {
     const page = this.pageIndex() + 1;
-    this.eventStore.loadEvents({ page, pageSize: this.pageSize() });
+    // MODULE 10: Calls loadOrganizerEvents() to see ONLY this organizer's events!
+    this.eventStore.loadOrganizerEvents({ page, pageSize: this.pageSize() });
   }
 
   onPageChange(event: PageEvent) {
@@ -38,11 +41,21 @@ export class OrganizerEventsComponent implements OnInit {
     this.loadEvents();
   }
 
-  // Opens the Event Creator Modal
   openCreateDialog() {
-    this.dialog.open(CreateEventDialogComponent, {
-      width: '600px',
-      panelClass: 'custom-dialog-container'
+    const dialogRef = this.dialog.open(CreateEventDialogComponent, { width: '600px' });
+    dialogRef.afterClosed().subscribe((created) => {
+      if (created) this.loadEvents();
+    });
+  }
+
+  // Opens the Manage Tickets Modal for the specific event
+  openTicketsDialog(event: Event) {
+    const dialogRef = this.dialog.open(ManageTicketsDialogComponent, {
+      width: '650px',
+      data: { event }
+    });
+    dialogRef.afterClosed().subscribe(() => {
+      this.loadEvents();
     });
   }
 

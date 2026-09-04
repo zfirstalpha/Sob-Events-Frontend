@@ -111,7 +111,25 @@ export const EventStore = signalStore(
       })
     ))
   )
-)
+),
+loadOrganizerEvents: rxMethod<PagedRequest | void>(
+      pipe(
+        tap(() => patchState(store, { isLoading: true, error: null })),
+        switchMap((req) => eventService.getOrganizerEvents(req || {}).pipe(
+          tap((res) => {
+            patchState(
+              store,
+              setAllEntities(res.items),
+              { totalCount: res.totalCount, isLoading: false }
+            );
+          }),
+          catchError((err) => {
+            patchState(store, { isLoading: false, error: err.error?.detail || 'Failed to load organizer events.' });
+            return of(null);
+          })
+        ))
+      )
+    ),
 
   }))
 );

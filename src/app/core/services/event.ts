@@ -50,4 +50,15 @@ export class EventService {
   cancelEvent(id: number | string): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}/${id}/cancel`, {});
   }
+
+
+  // Organizer Scoped Events (/my-events)
+  getOrganizerEvents(request?: PagedRequest): Observable<PagedResponse<Event>> {
+    let params = new HttpParams();
+    if (request?.page) params = params.set('page', request.page.toString());
+    if (request?.pageSize) params = params.set('pageSize', request.pageSize.toString());
+    if (request?.search) params = params.set('search', request.search);
+
+    return this.http.get<PagedResponse<Event>>(`${this.apiUrl}/my-events`, { params });
+  }
 }
