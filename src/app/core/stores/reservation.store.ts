@@ -25,17 +25,27 @@ export const ReservationStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
   withEntities<Reservation>(),
+
   withComputed((store) => ({
+
     hasActiveHold: computed(() => store.activeHold() !== null && store.holdSecondsRemaining() > 0),
+
+
     formattedTimer: computed(() => {
       const totalSec = store.holdSecondsRemaining();
+
       if (totalSec <= 0) return '00:00';
+
       const mins = Math.floor(totalSec / 60).toString().padStart(2, '0');
       const secs = (totalSec % 60).toString().padStart(2, '0');
       return `${mins}:${secs}`;
     }),
+
+
     activeBookingsCount: computed(() => store.entities().filter(r => r.status === 'Reserved' || r.status === 'Paid').length)
   })),
+
+  
   withMethods((
     store, 
     reservationService = inject(ReservationService),

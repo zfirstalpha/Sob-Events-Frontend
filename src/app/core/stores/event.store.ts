@@ -46,6 +46,7 @@ export const EventStore = signalStore(
       pipe(
         tap(() => patchState(store, { isLoading: true, error: null })),
         switchMap((req) => {
+          const pageSize = req?.pageSize ?? 6;
           const request: PagedRequest = {
             page: req?.page ?? store.currentPage(),
             pageSize: req?.pageSize ?? store.pageSize(),
