@@ -9,6 +9,7 @@
     "target": "http://localhost:5083",
     "secure": false,
     "ws": true,
-    "changeOrigin": true
+    "changeOrigin": true,
+    "logLevel": "debug"
   }
 }

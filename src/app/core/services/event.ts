@@ -11,7 +11,7 @@ export class EventService {
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/events`;
 
-  // 1. GET ALL (Paginated)
+  //  GET ALL (Paginated)
   getEvents(request?: PagedRequest): Observable<PagedResponse<Event>> {
     let params = new HttpParams();
     if (request?.page) params = params.set('page', request.page.toString());
@@ -21,32 +21,32 @@ export class EventService {
     return this.http.get<PagedResponse<Event>>(this.apiUrl, { params });
   }
 
-  // 2. GET BY ID (Used in EventDetailComponent!)
+  //  GET BY ID 
   getEventById(id: number | string): Observable<Event> {
     return this.http.get<Event>(`${this.apiUrl}/${id}`);
   }
 
-  // 3. CREATE EVENT (Organizer)
+  // CREATE EVENT (Organizer)
   createEvent(request: CreateEventRequest): Observable<Event> {
     return this.http.post<Event>(this.apiUrl, request);
   }
 
-  // 4. UPDATE EVENT (Organizer)
+  //  UPDATE EVENT (Organizer)
   updateEvent(id: number | string, request: CreateEventRequest): Observable<Event> {
     return this.http.put<Event>(`${this.apiUrl}/${id}`, request);
   }
 
-  // 5. DELETE EVENT (Organizer Soft Delete)
+  //  DELETE EVENT (Organizer Soft Delete)
   deleteEvent(id: number | string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  // 6. PUBLISH EVENT (State Transition: Draft -> Published)
+  //  PUBLISH EVENT 
   publishEvent(id: number | string): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}/${id}/publish`, {});
   }
 
-  // 7. CANCEL EVENT (State Transition -> Cancelled)
+  //  CANCEL EVENT
   cancelEvent(id: number | string): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}/${id}/cancel`, {});
   }

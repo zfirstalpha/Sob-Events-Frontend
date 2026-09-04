@@ -23,22 +23,22 @@ export class ReservationService {
     return this.http.get<Reservation[]>(`${this.apiUrl}/reservations/my-reservations`);
   }
 
-  // 1. ATTENDEE: Submit CBE / Telebirr Transaction ID
+  //  ATTENDEE: Submit Transaction ID
   submitPaymentProof(id: number | string, request: SubmitPaymentProofRequest): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}/reservations/${id}/submit-payment`, request);
   }
 
-  // 2. ORGANIZER: View event attendee approvals
+  //  ORGANIZER: View event attendee approvals
   getEventReservations(eventId: number | string): Observable<Reservation[]> {
     return this.http.get<Reservation[]>(`${this.apiUrl}/events/${eventId}/reservations`);
   }
 
-  // 3. ORGANIZER: Approve
+  //  ORGANIZER: Approve
   approveReservation(id: number | string): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}/reservations/${id}/approve`, {});
   }
 
-  // 4. ORGANIZER: Reject
+  //  ORGANIZER: Reject
   rejectReservation(id: number | string, request?: RejectReservationRequest): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}/reservations/${id}/reject`, request || {});
   }

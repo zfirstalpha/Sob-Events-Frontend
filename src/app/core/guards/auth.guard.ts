@@ -24,6 +24,6 @@ export const organizerGuard: CanActivateFn = () => {
     return true;
   }
 
-  // Redirect attendees away from organizer management
+ 
   return router.createUrlTree(['/events']);
 };

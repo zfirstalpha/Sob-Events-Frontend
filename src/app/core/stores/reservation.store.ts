@@ -3,7 +3,7 @@ import { signalStore, withState, withComputed, withMethods, patchState } from '@
 import { withEntities, setAllEntities, addEntity, updateEntity, removeEntity } from '@ngrx/signals/entities';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { pipe, tap, switchMap, concatMap, catchError, of } from 'rxjs';
-import { MatSnackBar } from '@angular/material/snack-bar'; // Add this using
+import { MatSnackBar } from '@angular/material/snack-bar'; 
 import { Reservation } from '../models';
 import { ReservationService } from '../services/reservation';
 
@@ -93,23 +93,23 @@ export const ReservationStore = signalStore(
         )
       ),
 
-      // MODULE 10 SESSION 3: Optimistic UI Cancellation with Snapshot Rollback!
+      //ui cancelation with snapshot rolebaxk
       cancelReservationOptimistic: rxMethod<number>(
         pipe(
           concatMap((id) => {
-            // 1. Capture snapshot before mutation
+            // capture snapshot before cancel
             const snapshot = store.entities();
 
-            // 2. Optimistically update UI immediately (0ms latency!)
+            //  update UI immediately 
             patchState(store, updateEntity({ id, changes: { status: 'Cancelled' } }));
 
-            // 3. Send API Call in background
+            
             return reservationService.cancelReservation(id).pipe(
               tap(() => {
                 snackBar.open('Reservation cancelled successfully.', 'Dismiss', { duration: 3000 });
               }),
               catchError((err) => {
-                // 4. ROLLBACK: Restore previous snapshot on failure!
+                // rol3back restore previous snapshot
                 patchState(store, setAllEntities(snapshot));
                 const errorMsg = err.error?.detail || 'Failed to cancel reservation. Changes reverted.';
                 snackBar.open(errorMsg, 'Dismiss', { duration: 5000 });
@@ -132,7 +132,7 @@ export const ReservationStore = signalStore(
             const currentHold = store.activeHold();
             if (!currentHold) return of(null);
 
-            // 1. Cancel the hold on the backend
+            // cancel the hold in backend
             return reservationService.cancelReservation(currentHold.id).pipe(
               tap(() => {
                 if (timerInterval) clearInterval(timerInterval);

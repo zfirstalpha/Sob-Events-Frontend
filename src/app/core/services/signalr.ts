@@ -2,6 +2,11 @@ import { Injectable, inject, signal } from '@angular/core';
 import { HubConnection, HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 import { EventStore } from '../stores/event.store';
 
+export interface LiveTicketUpdate {
+  ticketTypeId: number;
+  availableQuantity: number;
+  timestamp: number;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -10,33 +15,32 @@ export class SignalrService {
   private eventStore = inject(EventStore);
   private hubConnection: HubConnection | null = null;
 
-  // Signal indicating active connection
+   
   isConnected = signal<boolean>(false);
-
-  // Signal holding incoming live ticket capacity updates [ticketTypeId -> availableQuantity]
-  liveTicketUpdates = signal<{ ticketTypeId: number; availableQuantity: number } | null>(null);
+  liveTicketUpdates = signal<LiveTicketUpdate | null>(null);
 
   startConnection() {
-    // Connects through proxy.conf.json ("ws": true) to our backend /hubs/events
     this.hubConnection = new HubConnectionBuilder()
       .withUrl('/hubs/events')
       .withAutomaticReconnect()
       .configureLogging(LogLevel.Information)
       .build();
 
-    // Listen for live seat updates
     this.hubConnection.on('TicketsRemainingUpdated', (ticketTypeId: number, availableQuantity: number) => {
       console.log(`[SignalR] Live Seat Update: Ticket #${ticketTypeId} -> ${availableQuantity} remaining.`);
-      this.liveTicketUpdates.set({ ticketTypeId, availableQuantity });
+      // new object reference triggers effect every time
+      this.liveTicketUpdates.set({ 
+        ticketTypeId, 
+        availableQuantity, 
+        timestamp: Date.now() 
+      });
     });
 
-    // 2. Listen for event status transitions (Draft -> Published)
     this.hubConnection.on('EventStatusChanged', (eventId: number, newStatus: string) => {
       console.log(`[SignalR] Event #${eventId} status changed to ${newStatus}`);
-      this.eventStore.loadEvents(); // Reload catalog to show newly published event!
+      this.eventStore.loadEvents();
     });
 
-    // Start WebSocket handshake
     this.hubConnection
       .start()
       .then(() => {

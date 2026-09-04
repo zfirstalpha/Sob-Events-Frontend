@@ -9,9 +9,12 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
-      let errorMessage = 'An unexpected error occurred.';
-
+      
+       const isSilentAuthCheck = req.url.includes('/auth/me') || req.url.includes('/auth/refresh');
       // MODULE 6 & 10: Standardized HTTP Status Code Mapping
+
+      if (!isSilentAuthCheck) {
+        let errorMessage = 'An unexpected error occurred.';
       if (error.status === 401) {
         errorMessage = 'Authentication required. Please sign in to perform this action.';
       } else if (error.status === 403) {
@@ -32,12 +35,12 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 
       // Automatically surface the error to the user in an Angular Material SnackBar!
       snackBar.open(errorMessage, 'Dismiss', {
-        duration: 5000,
+        duration: 4000,
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
         panelClass: ['error-snackbar']
       });
-
+    }
       // Forward the error so stores know the request completed with failure
       return throwError(() => error);
     })

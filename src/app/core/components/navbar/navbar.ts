@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import {Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { Theme } from '../../services/theme';
-import { AuthStore } from '../../stores/auth.store'; // Add AuthStore
+import { AuthStore } from '../../stores/auth.store'; 
 import { EventStore } from '../../stores/event.store';
 
 @Component({

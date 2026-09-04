@@ -55,11 +55,11 @@ export class EventDetailComponent implements OnInit {
   });
 
   constructor() {
-    // MODULE 9 SESSION 3: effect() listens for incoming WebSocket seat updates in real time!
+    //effect() listens for incoming WebSocket seat updates in real time!
     effect(() => {
       const update = this.signalrService.liveTicketUpdates();
       if (update) {
-        // Dynamically update the ticket tier's remaining capacity on screen!
+        // dynamically update the ticket  remaining capacity on screen
         this.ticketTypes.update(tickets =>
           tickets.map(t => t.id === update.ticketTypeId 
             ? { ...t, availableQuantity: update.availableQuantity } 
@@ -69,7 +69,7 @@ export class EventDetailComponent implements OnInit {
       }
     });
 
-    // Defensive booking stream with exhaustMap (Module 9 Slide 9)
+    // Defensive booking stream with exhaustMap 
     this.reserveClick$.pipe(
       exhaustMap(({ ticketTypeId, quantity }) => {
         this.isSubmitting.set(true);
@@ -82,6 +82,8 @@ export class EventDetailComponent implements OnInit {
       next: (reservation) => {
         this.isSubmitting.set(false);
         this.reservationStore.setActiveHold(reservation);
+        //instant seat refresh Reloads ticket tiers for the current screen!
+        this.loadTickets(this.id());
       },
       error: (err) => {
         this.isSubmitting.set(false);

@@ -5,8 +5,8 @@ import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { pipe, tap, concatMap, switchMap, catchError, of } from 'rxjs';
 import { Event, CreateEventRequest, PagedRequest } from '../models';
 import { EventService } from '../services/event';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
-// MODULE 6 & 9: Complete Pagination State Interface
 interface EventState {
   isLoading: boolean;
   error: string | null;
@@ -23,7 +23,7 @@ const initialState: EventState = {
   error: null,
   totalCount: 0,
   currentPage: 1,
-  pageSize: 6, // 6 events per page fits a 3-column grid cleanly!
+  pageSize: 6,
   totalPages: 1,
   hasPrevious: false,
   hasNext: false
@@ -36,12 +36,12 @@ export const EventStore = signalStore(
   withComputed((store) => ({
     publishedCount: computed(() => store.entities().filter(e => e.status === 'Published').length),
     draftCount: computed(() => store.entities().filter(e => e.status === 'Draft').length),
-    // Array of page numbers [1, 2, 3...] for rendering numeric pagination buttons
+  
     pageNumbers: computed(() => Array.from({ length: store.totalPages() }, (_, i) => i + 1))
   })),
-  withMethods((store, eventService = inject(EventService)) => ({
+  withMethods((store, eventService = inject(EventService),snackBar = inject(MatSnackBar)) => ({
     
-    // 1. Load Public Catalog Events (with full pagination sync)
+    // Load Public Catalog Events (with full pagination sync)
     loadEvents: rxMethod<PagedRequest | void>(
       pipe(
         tap(() => patchState(store, { isLoading: true, error: null })),
@@ -166,15 +166,37 @@ export const EventStore = signalStore(
 
     deleteEvent: rxMethod<number>(
       pipe(
-        concatMap((id) => eventService.deleteEvent(id).pipe(
-          tap(() => {
-            patchState(store, removeEntity(id));
-          }),
-          catchError((err) => {
-            patchState(store, { error: err.error?.detail || 'Failed to delete event.' });
-            return of(null);
-          })
-        ))
+        concatMap((id) => {
+          
+          const snapshot = store.entities();
+
+          
+          patchState(store, removeEntity(id), { 
+            totalCount: Math.max(0, store.totalCount() - 1) 
+          });
+
+          // 3. Send API delete in background
+          return eventService.deleteEvent(id).pipe(
+            tap(() => {
+              snackBar.open('Event deleted successfully.', 'Dismiss', { duration: 3000 });
+            }),
+            catchError((err) => {
+              // restore previous snapshot on failure
+              patchState(store, setAllEntities(snapshot), {
+                totalCount: snapshot.length,
+                error: err.error?.detail || 'Failed to delete event.'
+              });
+
+              snackBar.open(
+                err.error?.detail || 'Failed to delete event. Action reverted.', 
+                'Dismiss', 
+                { duration: 5000 }
+              );
+
+              return of(null);
+            })
+          );
+        })
       )
     )
 
